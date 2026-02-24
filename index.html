@@ -225,22 +225,54 @@ const ES_BOOKS = {
   betway:"Betway", codere:"Codere", marathonbet:"Marathonbet", pinnacle:"Pinnacle"
 };
 
-const SPORTS = {
-  "⚽ LaLiga":        "soccer_spain_la_liga",
-  "⚽ Premier":       "soccer_england_premier_league",
-  "⚽ Champions":     "soccer_uefa_champs_league",
-  "⚽ Europa L.":     "soccer_uefa_europa_league",
-  "⚽ Bundesliga":    "soccer_germany_bundesliga",
-  "⚽ Serie A":       "soccer_italy_serie_a",
-  "⚽ Ligue 1":       "soccer_france_ligue_one",
-  "⚽ Segunda":       "soccer_spain_segunda_division",
-  "🏀 NBA":           "basketball_nba",
-  "🏀 EuroLeague":    "basketball_euroleague",
-  "🎾 ATP/WTA":       "tennis_atp_french_open",
-  "🏒 NHL":           "icehockey_nhl",
-  "🏈 NFL":           "americanfootball_nfl",
-  "⚾ MLB":           "baseball_mlb",
-  "🥊 MMA":           "mma_mixed_martial_arts",
+// Sport key → group mapping
+const SPORT_GROUP = {
+  soccer_spain_la_liga:"⚽ Fútbol", soccer_england_premier_league:"⚽ Fútbol",
+  soccer_uefa_champs_league:"⚽ Fútbol", soccer_uefa_europa_league:"⚽ Fútbol",
+  soccer_germany_bundesliga:"⚽ Fútbol", soccer_italy_serie_a:"⚽ Fútbol",
+  soccer_france_ligue_one:"⚽ Fútbol", soccer_spain_segunda_division:"⚽ Fútbol",
+  soccer_netherlands_eredivisie:"⚽ Fútbol", soccer_portugal_primeira_liga:"⚽ Fútbol",
+  soccer_efl_champ:"⚽ Fútbol", soccer_belgium_first_div:"⚽ Fútbol",
+  soccer_turkey_super_league:"⚽ Fútbol", soccer_greece_super_league:"⚽ Fútbol",
+  soccer_brazil_campeonato:"⚽ Fútbol", soccer_argentina_primera_division:"⚽ Fútbol",
+  soccer_mexico_ligamx:"⚽ Fútbol", soccer_usa_mls:"⚽ Fútbol",
+  soccer_conmebol_copa_libertadores:"⚽ Fútbol", soccer_uefa_european_championship:"⚽ Fútbol",
+  tennis_atp_french_open:"🎾 Tenis", tennis_wta_french_open:"🎾 Tenis",
+  tennis_atp_us_open:"🎾 Tenis", tennis_wta_us_open:"🎾 Tenis",
+  tennis_atp_wimbledon:"🎾 Tenis", tennis_wta_wimbledon:"🎾 Tenis",
+  tennis_atp_australian_open:"🎾 Tenis", tennis_wta_australian_open:"🎾 Tenis",
+  basketball_nba:"🏀 Otros", basketball_euroleague:"🏀 Otros", basketball_nba_championship_winner:"🏀 Otros",
+  icehockey_nhl:"🏀 Otros", americanfootball_nfl:"🏀 Otros", americanfootball_ncaaf:"🏀 Otros",
+  baseball_mlb:"🏀 Otros", mma_mixed_martial_arts:"🏀 Otros",
+  rugbyleague_nrl:"🏀 Otros", rugbyunion_six_nations:"🏀 Otros",
+  cricket_icc_world_cup:"🏀 Otros", cricket_test_match:"🏀 Otros",
+  golf_pga_tour_winner:"🏀 Otros", golf_masters_tournament_winner:"🏀 Otros",
+};
+
+// All sport keys to fetch
+const SPORTS = Object.keys(SPORT_GROUP);
+
+const SPORT_NICE = {
+  soccer_spain_la_liga:"LaLiga", soccer_england_premier_league:"Premier League",
+  soccer_uefa_champs_league:"Champions League", soccer_uefa_europa_league:"Europa League",
+  soccer_germany_bundesliga:"Bundesliga", soccer_italy_serie_a:"Serie A",
+  soccer_france_ligue_one:"Ligue 1", soccer_spain_segunda_division:"Segunda División",
+  soccer_netherlands_eredivisie:"Eredivisie", soccer_portugal_primeira_liga:"Liga Portugal",
+  soccer_efl_champ:"Championship", soccer_belgium_first_div:"Jupiler Pro",
+  soccer_turkey_super_league:"Süper Lig", soccer_greece_super_league:"Super League GR",
+  soccer_brazil_campeonato:"Brasileirão", soccer_argentina_primera_division:"Liga Profesional",
+  soccer_mexico_ligamx:"Liga MX", soccer_usa_mls:"MLS",
+  soccer_conmebol_copa_libertadores:"Copa Libertadores", soccer_uefa_european_championship:"Eurocopa",
+  tennis_atp_french_open:"ATP Roland Garros", tennis_wta_french_open:"WTA Roland Garros",
+  tennis_atp_us_open:"ATP US Open", tennis_wta_us_open:"WTA US Open",
+  tennis_atp_wimbledon:"ATP Wimbledon", tennis_wta_wimbledon:"WTA Wimbledon",
+  tennis_atp_australian_open:"ATP Australian Open", tennis_wta_australian_open:"WTA Australian Open",
+  basketball_nba:"NBA", basketball_euroleague:"EuroLeague",
+  icehockey_nhl:"NHL", americanfootball_nfl:"NFL", americanfootball_ncaaf:"NCAA Football",
+  baseball_mlb:"MLB", mma_mixed_martial_arts:"MMA/UFC",
+  rugbyleague_nrl:"NRL Rugby", rugbyunion_six_nations:"Six Nations",
+  cricket_icc_world_cup:"Cricket World Cup", cricket_test_match:"Cricket Test",
+  golf_pga_tour_winner:"PGA Tour", golf_masters_tournament_winner:"Masters Golf",
 };
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
@@ -328,62 +360,43 @@ async function fetchSport(sport) {
     });
 
     const { sum, isArb, profit } = calcArb(legs);
-    const sportLabel = Object.entries(SPORTS).find(([,v]) => v === sport)?.[0] || sport;
-    const esBooksUsed = [...new Set(legs.map(l => l.book))];
 
     events.push({
-      id, sport: sportLabel, match: `${home_team} vs ${away_team}`,
-      tournament: sportNiceName(sport),
+      id, sport: SPORT_NICE[sport] || sport,
+      group: SPORT_GROUP[sport] || "🏀 Otros",
+      match: `${home_team} vs ${away_team}`,
+      tournament: SPORT_NICE[sport] || sport,
       commence: commence_time, legs, isArb, profit,
       impliedSum: sum,
       bookCount: bookmakers.filter(b => ES_BOOKS[b.key]).length,
-      booksUsed: esBooksUsed,
     });
   }
-  S.diagLog.push(`✓ ${sport}: ${events.length} eventos, ${events.filter(e=>e.isArb).length} arbs`);
+  S.diagLog.push(`✓ ${SPORT_NICE[sport]||sport}: ${events.length} eventos`);
   renderDiag();
   return events;
 }
 
 async function fetchAll() {
-  S.loading = true; S.error = null; S.diagLog = ["Iniciando escaneo en paralelo…"];
+  S.loading = true; S.error = null; S.diagLog = ["Escaneando " + SPORTS.length + " competiciones en paralelo…"];
   render();
 
   try {
-    const results = await Promise.allSettled(
-      Object.values(SPORTS).map(s => fetchSport(s))
-    );
-
+    const results = await Promise.allSettled(SPORTS.map(s => fetchSport(s)));
     const all = [];
     for (const r of results) {
       if (r.status === "fulfilled") all.push(...r.value);
       else if (r.reason?.message) S.error = r.reason.message;
     }
-
     S.events = all;
     S.lastFetch = new Date();
-    S.diagLog.push(`Completado: ${all.length} eventos totales, ${all.filter(e=>e.isArb).length} arbs`);
+    S.diagLog.push(`✅ ${all.length} eventos · ${all.filter(e=>e.isArb).length} arbs detectados`);
   } catch(e) {
     S.error = e.message;
-    S.diagLog.push(`ERROR: ${e.message}`);
   }
 
   S.loading = false;
   S.countdown = 30;
   render();
-}
-
-function sportNiceName(key) {
-  const n = {
-    soccer_spain_la_liga:"LaLiga", soccer_england_premier_league:"Premier League",
-    soccer_uefa_champs_league:"Champions League", soccer_uefa_europa_league:"Europa League",
-    soccer_germany_bundesliga:"Bundesliga", soccer_italy_serie_a:"Serie A",
-    soccer_france_ligue_one:"Ligue 1", soccer_spain_segunda_division:"Segunda División",
-    basketball_nba:"NBA", basketball_euroleague:"EuroLeague",
-    tennis_atp_french_open:"ATP/WTA", icehockey_nhl:"NHL",
-    americanfootball_nfl:"NFL", baseball_mlb:"MLB", mma_mixed_martial_arts:"MMA/UFC"
-  };
-  return n[key] || key;
 }
 
 function fmtDate(iso) {
@@ -399,16 +412,17 @@ function fmtDate(iso) {
 function minsUntil(iso) { try { return (new Date(iso)-new Date())/60000; } catch { return 9999; } }
 
 // ── DISPLAY ───────────────────────────────────────────────────────────────────
+const GROUPS = ["Todos", "⚽ Fútbol", "🎾 Tenis", "🏀 Otros"];
+
 function getDisplay() {
   let list = [...S.events];
-  if (S.sportFilter !== "Todos") list = list.filter(e => e.sport === S.sportFilter);
+  if (S.sportFilter !== "Todos") list = list.filter(e => e.group === S.sportFilter);
   if (S.showOnlyArb) list = list.filter(e => e.isArb);
   if (!S.sorts.length) return list;
   return list.sort((a,b) => {
     for (const {key,dir} of S.sorts) {
       let va, vb;
       if (key==="profit") { va = a.isArb?(a.profit||0):-(a.impliedSum); vb = b.isArb?(b.profit||0):-(b.impliedSum); }
-      else if (key==="liq")  { va = a.bookCount; vb = b.bookCount; }
       else if (key==="time") { va = minsUntil(a.commence); vb = minsUntil(b.commence); }
       if (va!==vb) return dir==="desc"?vb-va:va-vb;
     }
@@ -481,7 +495,7 @@ function mainHTML() {
   const display = getDisplay();
   const arbs = S.events.filter(e=>e.isArb).length;
   const best = S.events.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0];
-  const sports = ["Todos", ...new Set(S.events.map(e=>e.sport).filter(Boolean))];
+  const sports = GROUPS;
 
   return `
 <div class="hdr">
@@ -528,7 +542,7 @@ ${S.tab==="scanner" ? `
 
 <div class="filter-bar">
   <span class="flbl">Ordenar:</span>
-  ${sb("profit","Rentab.")}${sb("liq","Liquidez")}${sb("time","Hora")}
+  ${sb("profit","Rentab.")}${sb("time","Hora")}
   ${S.sorts.length?`<button class="fbtn" id="clrSorts" style="color:var(--red);border-color:var(--red)">✕ Reset</button>`:""}
   <button class="arb-only ${S.showOnlyArb?"on":""}" id="arbOnlyBtn">Solo arb</button>
 </div>
