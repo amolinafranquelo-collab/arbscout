@@ -22,12 +22,11 @@
 }
 html{background:var(--bg);color:var(--text);font-family:var(--font);-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);margin:0;overflow-x:hidden}
-input,button{font-family:inherit}
+input,button,select{font-family:inherit}
 .app{max-width:460px;margin:0 auto;min-height:100dvh;display:flex;flex-direction:column;position:relative}
 
-/* ═══ SETUP SCREEN ═══ */
-.setup{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;gap:24px;
-  background:radial-gradient(ellipse at 50% 0%,rgba(0,230,118,.04) 0%,transparent 60%)}
+/* ═══ SETUP ═══ */
+.setup{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;gap:24px;background:radial-gradient(ellipse at 50% 0%,rgba(0,230,118,.04) 0%,transparent 60%)}
 .logo-xl{font-family:var(--display);font-size:48px;font-weight:900;letter-spacing:-1px;color:var(--accent);line-height:1}
 .logo-xl span{color:var(--text)}
 .setup-sub{font-size:11px;color:var(--muted);letter-spacing:3px;text-transform:uppercase}
@@ -36,48 +35,58 @@ input,button{font-family:inherit}
 .feat-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0;box-shadow:0 0 8px rgba(0,230,118,.4)}
 .card-setup{width:100%;max-width:360px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;flex-direction:column;gap:12px}
 .inp-label{font-size:9px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
-.inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;font-family:var(--font);font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
+.inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:13px 14px;font-size:13px;color:var(--text);outline:none;transition:border-color .2s}
 .inp:focus{border-color:var(--blue)}
 .inp::placeholder{color:var(--muted)}
-.btn-connect{width:100%;padding:14px;background:var(--accent);border:none;border-radius:var(--radius-sm);font-family:var(--display);font-size:17px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#000;cursor:pointer;transition:opacity .15s,transform .1s}
-.btn-connect:hover{opacity:.9}
-.btn-connect:active{transform:scale(.98)}
-.btn-connect:disabled{opacity:.45;cursor:default;transform:none}
+.btn-go{width:100%;padding:14px;background:var(--accent);border:none;border-radius:var(--radius-sm);font-family:var(--display);font-size:17px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#000;cursor:pointer;transition:opacity .15s,transform .1s}
+.btn-go:hover{opacity:.9}.btn-go:active{transform:scale(.98)}.btn-go:disabled{opacity:.45;cursor:default;transform:none}
 .err-box{background:var(--red-dim);border:1px solid rgba(255,82,82,.25);border-radius:var(--radius-sm);padding:10px 14px;font-size:11px;color:var(--red);display:none;line-height:1.6}
 .info-text{font-size:10px;color:var(--muted);text-align:center;line-height:1.8}
 .info-text a{color:var(--blue);text-decoration:none}
-.diag-box{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px;font-size:9px;color:var(--muted);line-height:2.2;width:100%;max-width:360px;display:none;max-height:200px;overflow-y:auto}
-.diag-box .ok{color:var(--accent)}.diag-box .err{color:var(--red)}.diag-box .warn{color:var(--amber)}
+.diag{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:12px;font-size:9px;color:var(--muted);line-height:2.2;width:100%;max-width:360px;display:none;max-height:200px;overflow-y:auto}
+.diag .ok{color:var(--accent)}.diag .err{color:var(--red)}.diag .warn{color:var(--amber)}
 
 /* ═══ HEADER ═══ */
-.hdr{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid var(--border);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hdr{position:sticky;top:0;z-index:60;background:var(--bg);border-bottom:1px solid var(--border)}
 .hdr-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px}
-.logo{font-family:var(--display);font-size:24px;font-weight:900;letter-spacing:-0.5px;color:var(--accent);user-select:none}
+.logo{font-family:var(--display);font-size:24px;font-weight:900;letter-spacing:-.5px;color:var(--accent);user-select:none}
 .logo span{color:var(--text)}
 .hdr-actions{display:flex;align-items:center;gap:6px}
-.req-counter{font-size:9px;color:var(--muted);white-space:nowrap}
 .btn-icon{width:32px;height:32px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .15s}
 .btn-icon:hover{border-color:var(--border-h);color:var(--text)}
-.btn-sm{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-sm{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn-sm:hover{border-color:var(--border-h);color:var(--text)}
 .btn-sm:disabled{opacity:.4;cursor:default}
-.btn-sm .spin-icon{display:inline-block}
-.btn-sm.loading .spin-icon{animation:spin .7s linear infinite}
+.btn-sm .si{display:inline-block}
+.btn-sm.loading .si{animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
-/* Tabs */
 .tabs{display:flex;border-top:1px solid var(--border)}
 .tab-btn{flex:1;padding:10px;background:transparent;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--display);font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);transition:all .2s}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent)}
 
-/* ═══ STATS BAR ═══ */
+/* ═══ BUDGET BAR ═══ */
+.budget{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--bg2);border-bottom:1px solid var(--border);font-size:9px}
+.budget-bar{flex:1;height:4px;border-radius:2px;background:var(--bg5);overflow:hidden}
+.budget-fill{height:100%;border-radius:2px;transition:width .3s}
+.budget-text{color:var(--muted);white-space:nowrap}
+
+/* ═══ SCAN MODE ═══ */
+.scan-mode{display:flex;gap:6px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border)}
+.scan-opt{flex:1;padding:8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);cursor:pointer;text-align:center;transition:all .15s}
+.scan-opt.active{border-color:var(--accent);background:var(--accent-dim)}
+.scan-opt-t{font-family:var(--display);font-size:13px;font-weight:700;color:var(--text)}
+.scan-opt.active .scan-opt-t{color:var(--accent)}
+.scan-opt-d{font-size:8px;color:var(--muted);margin-top:2px}
+.scan-opt-c{font-size:9px;color:var(--amber);margin-top:3px;font-weight:600}
+
+/* ═══ STATS ═══ */
 .stats-row{display:grid;grid-template-columns:repeat(4,1fr);background:var(--bg2);border-bottom:1px solid var(--border)}
 .stat-cell{text-align:center;padding:8px 4px;border-right:1px solid var(--border)}
 .stat-cell:last-child{border-right:none}
 .stat-val{font-family:var(--display);font-size:20px;font-weight:800;line-height:1}
 .stat-lbl{font-size:7px;letter-spacing:1.5px;color:var(--muted);margin-top:3px;text-transform:uppercase}
 
-/* ═══ STATUS BAR ═══ */
+/* ═══ STATUS ═══ */
 .status{display:flex;align-items:center;justify-content:space-between;padding:5px 14px;background:var(--bg3);border-bottom:1px solid var(--border);font-size:9px;color:var(--muted);gap:8px}
 .status-left{display:flex;align-items:center;gap:6px;min-width:0;overflow:hidden}
 .dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
@@ -87,33 +96,29 @@ input,button{font-family:inherit}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 .status-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
-/* ═══ SPORT CHIPS ═══ */
+/* ═══ CHIPS & FILTERS ═══ */
 .chips-row{display:flex;gap:5px;padding:8px 14px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .chips-row::-webkit-scrollbar{display:none}
-.chip{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0;font-family:var(--font)}
+.chip{padding:4px 12px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:11px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
 .chip.active{background:var(--blue-dim);border-color:var(--blue);color:var(--blue)}
-.chip .chip-count{font-size:9px;opacity:.7;margin-left:3px}
-
-/* ═══ FILTER BAR ═══ */
+.chip .cc{font-size:9px;opacity:.7;margin-left:3px}
 .filter-row{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .filter-row::-webkit-scrollbar{display:none}
-.filter-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
-.sort-btn{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--font);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.flbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;white-space:nowrap;flex-shrink:0}
+.sort-btn{display:inline-flex;align-items:center;gap:3px;padding:4px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
 .sort-btn.desc{border-color:var(--amber);color:var(--amber);background:var(--amber-dim)}
 .sort-btn.asc{border-color:#ff9100;color:#ff9100;background:rgba(255,145,0,.08)}
-.arb-toggle{margin-left:auto;padding:4px 11px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.arb-toggle{margin-left:auto;padding:4px 11px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--muted);font-size:10px;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
 .arb-toggle.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
 
-/* ═══ STAKE BAR ═══ */
+/* ═══ STAKE ═══ */
 .stake-row{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--bg2);border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none}
 .stake-row::-webkit-scrollbar{display:none}
-.stake-label{font-size:10px;color:var(--muted);font-weight:600;flex-shrink:0}
-.stake-chip{padding:4px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--display);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
-.stake-chip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
-.stake-input{width:65px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-family:var(--font);font-size:11px;text-align:center;outline:none;flex-shrink:0}
-.stake-input.active{border-color:var(--accent)}
-
-/* ═══ META ═══ */
+.stake-lbl{font-size:10px;color:var(--muted);font-weight:600;flex-shrink:0}
+.schip{padding:4px 12px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text2);font-family:var(--display);font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap;transition:all .15s;flex-shrink:0}
+.schip.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.sinp2{width:65px;padding:4px 8px;border-radius:var(--radius-sm);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:11px;text-align:center;outline:none;flex-shrink:0}
+.sinp2.active{border-color:var(--accent)}
 .meta-row{padding:4px 14px;font-size:9px;color:var(--muted);background:var(--bg);border-bottom:1px solid var(--border);display:flex;justify-content:space-between}
 .meta-row strong{color:var(--text)}
 
@@ -141,1060 +146,401 @@ input,button{font-family:inherit}
 .ev.arb .ev-impl{color:rgba(0,230,118,.45)}
 .ev-chev{font-size:9px;color:var(--muted);margin-left:5px;transition:transform .2s;flex-shrink:0;margin-top:4px}
 .ev-chev.open{transform:rotate(180deg)}
-
-/* Quick odds row */
 .ev-odds{display:flex;gap:4px;padding:0 12px 8px}
 .ev.arb .ev-odds{padding-left:16px}
-.odd-cell{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 4px;text-align:center;min-width:0}
-.odd-cell.best{border-color:var(--accent-mid)}
-.odd-name{font-size:7px;color:var(--muted);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.odd-val{font-family:var(--display);font-size:15px;font-weight:800;color:var(--text)}
-.odd-cell.best .odd-val{color:var(--accent)}
-.odd-book{font-size:7px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:5px 4px;text-align:center;min-width:0}
+.oc.best{border-color:var(--accent-mid)}
+.oc-n{font-size:7px;color:var(--muted);text-transform:uppercase;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.oc-v{font-family:var(--display);font-size:15px;font-weight:800;color:var(--text)}
+.oc.best .oc-v{color:var(--accent)}
+.oc-b{font-size:7px;color:var(--muted);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* ═══ DETAIL PANEL ═══ */
+/* ═══ DETAIL ═══ */
 .detail{border-top:1px solid var(--border);padding:12px;background:var(--bg3)}
-.result-box{display:flex;align-items:center;justify-content:space-between;border-radius:var(--radius);padding:10px 14px;margin-bottom:10px}
-.result-box.win{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2)}
-.result-box.lose{background:rgba(90,112,144,.06);border:1px solid var(--border)}
-.result-pct{font-family:var(--display);font-size:38px;font-weight:900;color:var(--accent);line-height:1}
-.result-info{text-align:right}
-.result-tag{font-size:8px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
-.result-profit{font-family:var(--display);font-size:16px;font-weight:800;color:var(--accent);margin-top:2px}
-.result-no{font-family:var(--display);font-size:14px;color:var(--muted);font-weight:700}
-.result-margin{font-size:10px;color:var(--text2)}
-
-.invest-row{display:flex;align-items:center;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 12px;margin-bottom:10px;gap:8px}
-.invest-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
-.invest-euro{font-family:var(--display);font-size:16px;font-weight:700;color:var(--muted)}
-.invest-inp{flex:1;background:transparent;border:none;outline:none;font-family:var(--font);font-size:18px;font-weight:600;color:var(--text);text-align:right;min-width:0}
-
-.legs-grid{display:flex;flex-direction:column;gap:6px}
-.leg-card{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px}
-.leg-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
-.leg-name{font-family:var(--display);font-size:14px;font-weight:700}
-.leg-odds{font-family:var(--display);font-size:19px;font-weight:900;color:var(--amber)}
-.leg-book{font-size:8px;color:var(--muted);margin-bottom:5px}
-.leg-amounts{display:flex;gap:5px}
-.leg-amt{flex:1;background:var(--bg5);border-radius:var(--radius-sm);padding:6px;text-align:center}
-.leg-amt-val{font-family:var(--display);font-size:15px;font-weight:800}
-.leg-amt-lbl{font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
-.leg-amt.stake .leg-amt-val{color:var(--blue)}
-.leg-amt.ret .leg-amt-val{color:var(--accent)}
-
-.compare-section{margin-top:8px}
-.compare-title{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
-.compare-row{display:flex;justify-content:space-between;align-items:center;padding:4px 9px;border-radius:var(--radius-sm);margin-bottom:3px;background:var(--bg5);border:1px solid var(--border)}
-.compare-row.top{background:rgba(0,230,118,.05);border-color:rgba(0,230,118,.18)}
-.compare-name{font-size:9px;color:var(--text2)}
-.compare-odds{font-family:var(--display);font-size:14px;font-weight:800;color:var(--text)}
-.compare-row.top .compare-odds{color:var(--accent)}
-.info-box{background:rgba(68,138,255,.06);border:1px solid rgba(68,138,255,.15);border-radius:var(--radius-sm);padding:7px 10px;font-size:9px;color:var(--blue);line-height:1.7;margin-top:8px}
+.rbox{display:flex;align-items:center;justify-content:space-between;border-radius:var(--radius);padding:10px 14px;margin-bottom:10px}
+.rbox.win{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2)}
+.rbox.lose{background:rgba(90,112,144,.06);border:1px solid var(--border)}
+.r-pct{font-family:var(--display);font-size:38px;font-weight:900;color:var(--accent);line-height:1}
+.r-info{text-align:right}
+.r-tag{font-size:8px;color:var(--accent);letter-spacing:2px;text-transform:uppercase}
+.r-profit{font-family:var(--display);font-size:16px;font-weight:800;color:var(--accent);margin-top:2px}
+.r-no{font-family:var(--display);font-size:14px;color:var(--muted);font-weight:700}
+.r-mg{font-size:10px;color:var(--text2)}
+.inv-row{display:flex;align-items:center;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:8px 12px;margin-bottom:10px;gap:8px}
+.inv-lbl{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.inv-e{font-family:var(--display);font-size:16px;font-weight:700;color:var(--muted)}
+.inv-i{flex:1;background:transparent;border:none;outline:none;font-size:18px;font-weight:600;color:var(--text);text-align:right;min-width:0}
+.lgrid{display:flex;flex-direction:column;gap:6px}
+.lc{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius);padding:8px 10px}
+.lc-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:3px}
+.lc-name{font-family:var(--display);font-size:14px;font-weight:700}
+.lc-odds{font-family:var(--display);font-size:19px;font-weight:900;color:var(--amber)}
+.lc-book{font-size:8px;color:var(--muted);margin-bottom:5px}
+.lc-amts{display:flex;gap:5px}
+.la{flex:1;background:var(--bg5);border-radius:var(--radius-sm);padding:6px;text-align:center}
+.la-v{font-family:var(--display);font-size:15px;font-weight:800}
+.la-l{font-size:7px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.la.s .la-v{color:var(--blue)}.la.r .la-v{color:var(--accent)}
+.comp{margin-top:8px}
+.comp-t{font-size:8px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px}
+.comp-r{display:flex;justify-content:space-between;align-items:center;padding:4px 9px;border-radius:var(--radius-sm);margin-bottom:3px;background:var(--bg5);border:1px solid var(--border)}
+.comp-r.top{background:rgba(0,230,118,.05);border-color:rgba(0,230,118,.18)}
+.comp-n{font-size:9px;color:var(--text2)}
+.comp-o{font-family:var(--display);font-size:14px;font-weight:800;color:var(--text)}
+.comp-r.top .comp-o{color:var(--accent)}
+.ibox{background:rgba(68,138,255,.06);border:1px solid rgba(68,138,255,.15);border-radius:var(--radius-sm);padding:7px 10px;font-size:9px;color:var(--blue);line-height:1.7;margin-top:8px}
 
 /* ═══ SKELETON ═══ */
-.skel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;padding:14px;overflow:hidden;position:relative}
-.skel::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,rgba(28,42,58,.6) 50%,transparent 80%);animation:shimmer 1.4s infinite}
+.sk{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:6px;padding:14px;overflow:hidden;position:relative}
+.sk::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 20%,rgba(28,42,58,.6) 50%,transparent 80%);animation:shimmer 1.4s infinite}
 @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.skel-line{height:8px;border-radius:4px;background:var(--border2);margin-bottom:8px}
-.skel-w{width:70%}.skel-m{width:45%}.skel-s{width:25%}
-.skel-boxes{display:flex;gap:5px;margin-top:10px}
-.skel-box{flex:1;height:44px;border-radius:var(--radius-sm);background:var(--border2)}
+.sk-l{height:8px;border-radius:4px;background:var(--border2);margin-bottom:8px}
+.sk-w{width:70%}.sk-m{width:45%}.sk-s{width:25%}
+.sk-bx{display:flex;gap:5px;margin-top:10px}.sk-b{flex:1;height:44px;border-radius:var(--radius-sm);background:var(--border2)}
 
-/* ═══ EMPTY STATE ═══ */
 .empty{display:flex;flex-direction:column;align-items:center;padding:60px 24px;gap:14px;color:var(--muted);text-align:center}
 .empty-icon{font-size:40px;opacity:.7}
 .empty-text{font-size:12px;line-height:1.6;max-width:280px}
 
-/* ═══ CALCULATOR ═══ */
+/* ═══ CALC ═══ */
 .calc{padding:14px}
-.calc-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.calc-t{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
 .calc-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:8px}
-.calc-fields{display:flex;gap:8px;margin-bottom:8px}
-.calc-field{flex:1}
-.calc-label{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
-.calc-inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 9px;font-family:var(--font);font-size:11px;color:var(--text);outline:none}
+.calc-row{display:flex;gap:8px;margin-bottom:8px}
+.calc-f{flex:1}
+.calc-lbl{font-size:8px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+.calc-inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:7px 9px;font-size:11px;color:var(--text);outline:none}
 .calc-inp:focus{border-color:var(--blue)}
-.calc-odds-inp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-family:var(--display);font-size:26px;font-weight:800;color:var(--amber);text-align:center;outline:none}
-.calc-odds-inp:focus{border-color:var(--amber)}
+.calc-oinp{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px;font-family:var(--display);font-size:26px;font-weight:800;color:var(--amber);text-align:center;outline:none}
+.calc-oinp:focus{border-color:var(--amber)}
 .calc-btns{display:flex;gap:8px;margin-bottom:12px}
 .calc-btn{flex:1;padding:9px;border:none;cursor:pointer;border-radius:var(--radius);font-family:var(--display);font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;transition:opacity .15s}
 .calc-add{background:var(--bg3);border:1px solid var(--border);color:var(--text)}
 .calc-del{background:var(--red-dim);border:1px solid rgba(255,82,82,.25);color:var(--red)}
-.calc-result{border-radius:var(--radius);padding:12px;margin-bottom:12px}
-.calc-result.win{background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2)}
-.calc-result.lose{background:rgba(90,112,144,.06);border:1px solid var(--border)}
 
 /* ═══ TICKER ═══ */
-.ticker{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:var(--bg2);border-top:1px solid var(--border);padding:6px 14px;font-size:9px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;z-index:50;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.ticker{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:460px;background:var(--bg2);border-top:1px solid var(--border);padding:6px 14px;font-size:9px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;z-index:50}
 .ticker-left{display:flex;align-items:center;gap:5px}
 .ticker-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-.ticker-dot.ok{background:var(--accent)}
-.ticker-dot.loading{background:var(--amber);animation:pulse 1s infinite}
-.auto-toggle{padding:3px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--muted);font-family:var(--font);font-size:9px;cursor:pointer;transition:all .15s;white-space:nowrap}
-.auto-toggle.active{border-color:var(--accent);color:var(--accent)}
-
-/* ═══ SCROLLBAR ═══ */
-.content::-webkit-scrollbar{width:3px}
-.content::-webkit-scrollbar-track{background:transparent}
-.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.ticker-dot.ok{background:var(--accent)}.ticker-dot.loading{background:var(--amber);animation:pulse 1s infinite}
+.auto-btn{padding:3px 10px;border-radius:var(--radius-sm);border:1px solid var(--border);background:transparent;color:var(--muted);font-size:9px;cursor:pointer;transition:all .15s;white-space:nowrap}
+.auto-btn.on{border-color:var(--accent);color:var(--accent)}
+.content::-webkit-scrollbar{width:3px}.content::-webkit-scrollbar-track{background:transparent}.content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
 </style>
 </head>
 <body>
 <div id="app" class="app"></div>
 <script>
-// ════════════════════════════════════════════════════════════════════════════════
-// ArbScout v2.0 — Complete Rebuild
-// ════════════════════════════════════════════════════════════════════════════════
+const API="https://api.the-odds-api.com/v4";
+const ES_BOOKS={bet365:"Bet365",betfair_ex_eu:"Betfair",williamhill:"William Hill",bwin:"Bwin",unibet_es:"Unibet","888sport":"888sport",betway:"Betway",codere:"Codere",marathonbet:"Marathonbet",pinnacle:"Pinnacle"};
+function classifyKey(k){if(k.startsWith("soccer"))return"soccer";if(k.startsWith("tennis"))return"tennis";return"other"}
+const GLBL={all:"Todos",soccer:"⚽ Fútbol",tennis:"🎾 Tenis",other:"🏀 Otros"};
+const GICON={soccer:"⚽",tennis:"🎾",other:"🏀"};
+const TITLES={};
+const TOP_SPORTS=["soccer_spain_la_liga","soccer_epl","soccer_uefa_champs_league","soccer_germany_bundesliga","soccer_italy_serie_a","soccer_france_ligue_one","tennis_atp_aus_open","tennis_atp_french_open","tennis_atp_us_open","tennis_atp_wimbledon","basketball_nba","basketball_euroleague","icehockey_nhl","mma_mixed_martial_arts"];
 
-const API_BASE = "https://api.the-odds-api.com/v4";
-let activeProxy = 0; // index of working proxy strategy
-
-// Spanish DGOJ bookmakers only
-const ES_BOOKS = {
-  bet365: "Bet365",
-  betfair_ex_eu: "Betfair",
-  williamhill: "William Hill",
-  bwin: "Bwin",
-  unibet_es: "Unibet",
-  "888sport": "888sport",
-  betway: "Betway",
-  codere: "Codere",
-  marathonbet: "Marathonbet",
-  pinnacle: "Pinnacle"
+const S={
+  key:localStorage.getItem("arb_key")||"",ok:!!localStorage.getItem("arb_key"),
+  events:[],loading:false,error:null,lastFetch:null,remaining:null,used:null,
+  scanMode:localStorage.getItem("arb_mode")||"smart",allSportKeys:[],
+  tab:"scanner",sportFilter:"all",showOnlyArb:false,
+  sortKey:"profit",sortDir:"desc",expanded:null,
+  stake:100,customStake:"",isCustom:false,detailStakes:{},
+  autoRefresh:false,countdown:120,_timer:null,
+  calcLegs:[{label:"Resultado 1",book:"Bet365",odds:""},{label:"Resultado 2",book:"William Hill",odds:""}],
+  calcStake:100,diagLog:[],sportCounts:{soccer:0,tennis:0,other:0}
 };
 
-// Sport classification — MUST match GROUPS keys exactly
-const GROUPS = { all: "Todos", soccer: "Fútbol", tennis: "Tenis", other: "Otros" };
-function classifyKey(key) {
-  if (key.startsWith("soccer")) return "soccer";
-  if (key.startsWith("tennis")) return "tennis";
-  return "other";
-}
+// ═══ MATH ═══
+const calcArb=legs=>{const sum=legs.reduce((a,l)=>a+1/(parseFloat(l.odds)||1),0);return{sum,isArb:sum<1,profit:sum<1?((1-sum)/sum)*100:null}};
+const calcStakes=(legs,tot)=>{const sum=legs.reduce((a,l)=>a+1/(parseFloat(l.odds)||1),0);return legs.map(l=>{const s=(tot*(1/parseFloat(l.odds)))/sum;return{...l,stake:+s.toFixed(2),payout:+(s*parseFloat(l.odds)).toFixed(2)}})};
 
-// Readable titles from API
-const SPORT_TITLES = {};
-
-// ── STATE ───────────────────────────────────────────────────────────────────
-const state = {
-  // Auth
-  apiKey: localStorage.getItem("arbscout_key") || "",
-  connected: false,
-
-  // Data
-  events: [],
-  loading: false,
-  error: null,
-  lastFetch: null,
-  remaining: null,
-  sportCounts: { soccer: 0, tennis: 0, other: 0 },
-
-  // UI
-  tab: "scanner",    // scanner | calculator
-  sportFilter: "all", // all | soccer | tennis | other
-  showOnlyArb: false,
-  sortKey: "profit",  // profit | time
-  sortDir: "desc",
-  expanded: null,
-  stake: 100,
-  customStake: "",
-  isCustom: false,
-  detailStakes: {},
-
-  // Auto refresh
-  autoRefresh: false,
-  countdown: 30,
-  _timer: null,
-
-  // Calculator
-  calcLegs: [
-    { label: "Resultado 1", book: "Bet365", odds: "" },
-    { label: "Resultado 2", book: "William Hill", odds: "" }
-  ],
-  calcStake: 100,
-
-  // Diagnostics
-  diagLog: [],
-};
-
-// Auto-connect if key exists
-if (state.apiKey) state.connected = true;
-
-// ── MATH ────────────────────────────────────────────────────────────────────
-function calcArb(legs) {
-  const sum = legs.reduce((acc, l) => acc + 1 / (parseFloat(l.odds) || 1), 0);
-  const isArb = sum < 1.0;
-  const profit = isArb ? ((1 - sum) / sum) * 100 : null;
-  return { sum, isArb, profit };
-}
-
-function calcStakes(legs, total) {
-  const sum = legs.reduce((acc, l) => acc + 1 / (parseFloat(l.odds) || 1), 0);
-  return legs.map(l => {
-    const stake = (total * (1 / parseFloat(l.odds))) / sum;
-    return {
-      ...l,
-      stake: +stake.toFixed(2),
-      payout: +(stake * parseFloat(l.odds)).toFixed(2)
-    };
+// ═══ NETWORK ═══
+let fetchCtrl=null;
+function fetchTO(url,ms=10000){
+  return new Promise((resolve,reject)=>{
+    const ac=new AbortController();
+    const t=setTimeout(()=>{ac.abort();reject(new Error("Timeout"))},ms);
+    if(fetchCtrl?.signal.aborted){clearTimeout(t);reject(new Error("Cancelado"));return}
+    const onAbort=()=>{ac.abort();clearTimeout(t);reject(new Error("Cancelado"))};
+    fetchCtrl?.signal.addEventListener("abort",onAbort,{once:true});
+    fetch(url,{signal:ac.signal}).then(r=>{clearTimeout(t);resolve(r)}).catch(e=>{clearTimeout(t);reject(e)});
   });
 }
+async function apiGet(url){
+  const strats=[u=>u,u=>"https://corsproxy.io/?"+encodeURIComponent(u)];
+  let lastErr;
+  for(const fn of strats){
+    try{const r=await fetchTO(fn(url),10000);if(r.ok||[401,404,422,429].includes(r.status))return r}
+    catch(e){lastErr=e;if(e.message==="Cancelado")throw e}
+  }
+  throw lastErr||new Error("Sin conexión");
+}
+function cancelFetch(){if(fetchCtrl){fetchCtrl.abort();fetchCtrl=null}S.loading=false;S.countdown=120;dlog("⛔ Cancelado","warn");render()}
 
-// ── NETWORK ─────────────────────────────────────────────────────────────────
-let fetchController = null; // global AbortController for cancelling
+// ═══ CACHE (5 min) ═══
+const CACHE_TTL=300000;
+function cGet(k){try{const r=sessionStorage.getItem("a_"+k);if(!r)return null;const{d,t}=JSON.parse(r);if(Date.now()-t>CACHE_TTL){sessionStorage.removeItem("a_"+k);return null}return d}catch{return null}}
+function cSet(k,d){try{sessionStorage.setItem("a_"+k,JSON.stringify({d,t:Date.now()}))}catch{}}
 
-function fetchWithTimeout(url, timeoutMs = 10000) {
-  return new Promise((resolve, reject) => {
-    const controller = new AbortController();
-    const timer = setTimeout(() => { controller.abort(); reject(new Error("Timeout")); }, timeoutMs);
+// ═══ FETCH SPORT ═══
+async function fetchSport(sk){
+  const cached=cGet(sk);
+  if(cached){dlog(`⚡ ${TITLES[sk]||sk}: cache (${cached.length})`,"ok");return cached}
+  const url=`${API}/sports/${sk}/odds/?apiKey=${S.key}&regions=eu,uk&markets=h2h&oddsFormat=decimal`;
+  let res;try{res=await apiGet(url)}catch(e){dlog(`✗ ${sk}: ${e.message}`,"err");return[]}
+  const rem=res.headers.get("x-requests-remaining"),used=res.headers.get("x-requests-used");
+  if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used);
+  if(res.status===401)throw new Error("API key inválida");
+  if(res.status===429){dlog("⏳ Rate limit","warn");throw new Error("RATE_LIMIT")}
+  if(!res.ok||res.status===422||res.status===404)return[];
+  const data=await res.json();if(!Array.isArray(data))return[];
+  const events=[];
+  for(const g of data){
+    if(!g.bookmakers||g.bookmakers.length<2)continue;
+    const oMap={};
+    for(const bk of g.bookmakers){if(!ES_BOOKS[bk.key])continue;const h2h=bk.markets?.find(m=>m.key==="h2h");if(!h2h)continue;for(const oc of h2h.outcomes){if(!oMap[oc.name])oMap[oc.name]=[];oMap[oc.name].push({book:ES_BOOKS[bk.key],bookKey:bk.key,odds:oc.price})}}
+    const names=Object.keys(oMap);if(names.length<2)continue;
+    const legs=names.map(n=>{const opts=oMap[n].sort((a,b)=>b.odds-a.odds);return{label:n,odds:opts[0].odds,book:opts[0].book,bookKey:opts[0].bookKey,allOpts:opts}});
+    const{sum,isArb,profit}=calcArb(legs);
+    events.push({id:g.id,sportKey:sk,group:classifyKey(sk),sport:TITLES[sk]||sk,match:`${g.home_team} vs ${g.away_team}`,tournament:TITLES[sk]||sk,commence:g.commence_time,legs,isArb,profit,impliedSum:sum,bookCount:g.bookmakers.filter(b=>ES_BOOKS[b.key]).length});
+  }
+  cSet(sk,events);dlog(`✓ ${TITLES[sk]||sk}: ${events.length} eventos`,"ok");return events;
+}
 
-    // Also listen to global cancel
-    if (fetchController) {
-      fetchController.signal.addEventListener("abort", () => { controller.abort(); reject(new Error("Cancelado")); });
+// ═══ MAIN FETCH ═══
+async function fetchAll(){
+  if(S.loading){cancelFetch();await sleep(200)}
+  fetchCtrl=new AbortController();S.loading=true;S.error=null;S.diagLog=[];
+  dlog("Consultando deportes activos…");render();
+  const safety=setTimeout(()=>{if(S.loading){S.loading=false;S.lastFetch=new Date();updateCounts();render()}},60000);
+  try{
+    const sRes=await apiGet(`${API}/sports?apiKey=${S.key}&all=false`);
+    if(sRes.status===401)throw new Error("API key inválida");
+    if(!sRes.ok)throw new Error(`Error ${sRes.status}`);
+    // Check remaining from /sports call too
+    const rem0=sRes.headers.get("x-requests-remaining"),used0=sRes.headers.get("x-requests-used");
+    if(rem0)S.remaining=parseInt(rem0);if(used0)S.used=parseInt(used0);
+
+    const all=await sRes.json();
+    all.forEach(s=>{TITLES[s.key]=s.title||s.key});
+    S.allSportKeys=all.map(s=>s.key);
+
+    // Check if we have requests left
+    if(S.remaining!==null&&S.remaining<1){
+      S.error="0 requests restantes este mes. Renueva en the-odds-api.com";
+      dlog("✗ Sin requests restantes","err");
+      S.loading=false;clearTimeout(safety);render();return;
     }
 
-    fetch(url, { signal: controller.signal })
-      .then(res => { clearTimeout(timer); resolve(res); })
-      .catch(err => { clearTimeout(timer); reject(err); });
-  });
-}
+    let toScan;
+    if(S.scanMode==="smart"){
+      toScan=S.allSportKeys.filter(k=>TOP_SPORTS.includes(k));
+      if(toScan.length===0)toScan=S.allSportKeys.slice(0,8);
+    }else{toScan=S.allSportKeys}
 
-async function apiFetch(url) {
-  // Try direct first (works from GitHub Pages), then proxies with shorter timeout
-  const strategies = [
-    { fn: url => url, timeout: 10000 },
-    { fn: url => "https://corsproxy.io/?" + encodeURIComponent(url), timeout: 8000 },
-    { fn: url => "https://api.allorigins.win/raw?url=" + encodeURIComponent(url), timeout: 8000 },
-  ];
+    const needFetch=toScan.filter(k=>!cGet(k)).length;
+    const fromCache=toScan.length-needFetch;
+    dlog(`${toScan.length} deportes seleccionados (${fromCache} cache, ${needFetch} a consultar)`);
 
-  // Put active proxy first
-  const order = [activeProxy, ...Array.from({ length: strategies.length }, (_, i) => i).filter(i => i !== activeProxy)];
-  let lastErr = null;
-
-  for (const idx of order) {
-    const s = strategies[idx];
-    try {
-      const proxied = s.fn(url);
-      const res = await fetchWithTimeout(proxied, s.timeout);
-      if (res.ok || res.status === 401 || res.status === 422 || res.status === 404 || res.status === 429) {
-        activeProxy = idx;
-        return res;
-      }
-      lastErr = new Error(`HTTP ${res.status}`);
-    } catch (e) {
-      lastErr = e;
-      if (e.message === "Cancelado") throw e;
-      // Log proxy failure for diagnostics
-      diagLog(`Proxy ${idx} falló: ${e.message}`, "warn");
+    // Protect against burning all requests
+    if(S.remaining!==null&&needFetch>S.remaining){
+      dlog(`⚠️ Solo ${S.remaining} req — limitando consulta`,"warn");
+      let count=0;toScan=toScan.filter(k=>{if(cGet(k))return true;if(count<S.remaining){count++;return true}return false});
     }
-  }
-  throw lastErr || new Error("Sin conexión — revisa tu red");
-}
-
-function cancelFetch() {
-  if (fetchController) { fetchController.abort(); fetchController = null; }
-  state.loading = false;
-  state.countdown = 30;
-  diagLog("⛔ Escaneo cancelado", "warn");
-  render();
-}
-
-// ── CACHE ───────────────────────────────────────────────────────────────────
-const CACHE_TTL = 45000; // 45 seconds
-function cacheGet(key) {
-  try {
-    const raw = sessionStorage.getItem("arb_" + key);
-    if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL) { sessionStorage.removeItem("arb_" + key); return null; }
-    return data;
-  } catch { return null; }
-}
-function cacheSet(key, data) {
-  try { sessionStorage.setItem("arb_" + key, JSON.stringify({ data, ts: Date.now() })); } catch {}
-}
-
-// ── FETCH SPORT ODDS ────────────────────────────────────────────────────────
-async function fetchSportOdds(sportKey) {
-  // Check cache first
-  const cached = cacheGet(sportKey);
-  if (cached) {
-    diagLog(`⚡ ${SPORT_TITLES[sportKey] || sportKey}: cache (${cached.length} eventos)`);
-    return cached;
-  }
-
-  const url = `${API_BASE}/sports/${sportKey}/odds/?apiKey=${state.apiKey}&regions=eu,uk&markets=h2h&oddsFormat=decimal`;
-
-  let res;
-  try {
-    res = await apiFetch(url);
-  } catch (e) {
-    diagLog(`✗ ${sportKey}: ${e.message}`, "err");
-    return [];
-  }
-
-  // Update remaining requests counter
-  const rem = res.headers.get("x-requests-remaining");
-  if (rem) state.remaining = parseInt(rem);
-
-  if (res.status === 401) throw new Error("API key inválida");
-  if (res.status === 429) throw new Error("Rate limit — espera 60s");
-  if (res.status === 422 || res.status === 404 || !res.ok) return [];
-
-  const data = await res.json();
-  if (!Array.isArray(data)) return [];
-
-  const events = [];
-  for (const game of data) {
-    const { id, commence_time, home_team, away_team, bookmakers } = game;
-    if (!bookmakers || bookmakers.length < 2) continue;
-
-    // Build outcome map — Spanish books only
-    const outcomeMap = {};
-    for (const bk of bookmakers) {
-      if (!ES_BOOKS[bk.key]) continue;
-      const h2h = bk.markets?.find(m => m.key === "h2h");
-      if (!h2h) continue;
-      for (const oc of h2h.outcomes) {
-        if (!outcomeMap[oc.name]) outcomeMap[oc.name] = [];
-        outcomeMap[oc.name].push({ book: ES_BOOKS[bk.key], bookKey: bk.key, odds: oc.price });
-      }
-    }
-
-    const outcomes = Object.keys(outcomeMap);
-    if (outcomes.length < 2) continue;
-
-    // Best odds per outcome + alternatives sorted desc
-    const legs = outcomes.map(name => {
-      const opts = outcomeMap[name].sort((a, b) => b.odds - a.odds);
-      return { label: name, odds: opts[0].odds, book: opts[0].book, bookKey: opts[0].bookKey, allOpts: opts };
-    });
-
-    const { sum, isArb, profit } = calcArb(legs);
-    const group = classifyKey(sportKey);
-
-    events.push({
-      id,
-      sportKey,
-      group,
-      sport: SPORT_TITLES[sportKey] || sportKey,
-      match: `${home_team} vs ${away_team}`,
-      tournament: SPORT_TITLES[sportKey] || sportKey,
-      commence: commence_time,
-      legs,
-      isArb,
-      profit,
-      impliedSum: sum,
-      bookCount: bookmakers.filter(b => ES_BOOKS[b.key]).length
-    });
-  }
-
-  cacheSet(sportKey, events);
-  diagLog(`✓ ${SPORT_TITLES[sportKey] || sportKey}: ${events.length} eventos`, "ok");
-  return events;
-}
-
-// ── MAIN FETCH ──────────────────────────────────────────────────────────────
-async function fetchAll() {
-  // If already loading, cancel previous and restart
-  if (state.loading) {
-    cancelFetch();
-    await sleep(200);
-  }
-
-  fetchController = new AbortController();
-  state.loading = true;
-  state.error = null;
-  state.diagLog = [];
-  diagLog("Consultando deportes activos…");
-  render();
-
-  // Global safety timeout — 90s max, then force-finish
-  const safetyTimer = setTimeout(() => {
-    if (state.loading) {
-      diagLog("⏰ Tiempo máximo alcanzado — mostrando resultados parciales", "warn");
-      state.loading = false;
-      state.lastFetch = new Date();
-      updateSportCounts();
-      render();
-    }
-  }, 90000);
-
-  try {
-    // Step 1: Get all active sports
-    const sportsUrl = `${API_BASE}/sports?apiKey=${state.apiKey}&all=false`;
-    const sRes = await apiFetch(sportsUrl);
-    if (sRes.status === 401) throw new Error("API key inválida — revisa tu key");
-    if (!sRes.ok) throw new Error(`Error ${sRes.status} al obtener deportes`);
-
-    const allSports = await sRes.json();
-    allSports.forEach(s => { SPORT_TITLES[s.key] = s.title || s.key; });
-
-    const sportKeys = allSports.map(s => s.key);
-    diagLog(`${sportKeys.length} competiciones activas. Escaneando en lotes…`);
     render();
 
-    // Step 2: Fetch in batches of 4 with 500ms delay between batches
-    const BATCH_SIZE = 4;
-    const BATCH_DELAY = 500;
-    const allEvents = [];
-    let rateLimited = false;
-
-    for (let i = 0; i < sportKeys.length; i += BATCH_SIZE) {
-      // Check if cancelled
-      if (fetchController?.signal.aborted) break;
-
-      const batch = sportKeys.slice(i, i + BATCH_SIZE);
-      const results = await Promise.allSettled(batch.map(k => fetchSportOdds(k)));
-
-      for (const r of results) {
-        if (r.status === "fulfilled") {
-          allEvents.push(...r.value);
-        } else if (r.reason?.message?.includes("Rate limit")) {
-          rateLimited = true;
-        } else if (r.reason?.message === "Cancelado") {
-          break;
-        } else if (r.reason?.message) {
-          state.error = r.reason.message;
-        }
-      }
-
-      if (rateLimited) {
-        diagLog("⏳ Rate limit — esperando 5s y reintentando lote…", "warn");
-        render();
-        await sleep(5000);
-        // Retry this batch once
-        const retry = await Promise.allSettled(batch.map(k => fetchSportOdds(k)));
-        for (const rr of retry) {
-          if (rr.status === "fulfilled") allEvents.push(...rr.value);
-        }
-        // Continue with remaining batches but with longer delays
-      }
-
-      // Delay between batches (except last)
-      if (i + BATCH_SIZE < sportKeys.length) {
-        await sleep(rateLimited ? 1000 : BATCH_DELAY);
-      }
-
-      // Live render progress
-      state.events = [...allEvents];
-      updateSportCounts();
-      render();
+    const BATCH=3,DELAY=500;const allEv=[];
+    for(let i=0;i<toScan.length;i+=BATCH){
+      if(fetchCtrl?.signal.aborted)break;
+      const batch=toScan.slice(i,i+BATCH);
+      const results=await Promise.allSettled(batch.map(k=>fetchSport(k)));
+      let hitRL=false;
+      for(const r of results){if(r.status==="fulfilled")allEv.push(...r.value);else if(r.reason?.message==="RATE_LIMIT")hitRL=true;else if(r.reason?.message==="Cancelado")break}
+      if(hitRL){dlog("⏳ Rate limit — pausa 8s…","warn");render();await sleep(8000)}
+      if(i+BATCH<toScan.length)await sleep(DELAY);
+      S.events=[...allEv];updateCounts();render();
     }
-
-    state.events = allEvents;
-    state.lastFetch = new Date();
-    updateSportCounts();
-
-    const arbCount = allEvents.filter(e => e.isArb).length;
-    diagLog(`✅ ${allEvents.length} eventos totales · ${arbCount} arbitrajes`, "ok");
-
-  } catch (e) {
-    if (e.message !== "Cancelado") {
-      state.error = e.message;
-      diagLog(`ERROR: ${e.message}`, "err");
-    }
-  }
-
-  clearTimeout(safetyTimer);
-  fetchController = null;
-  state.loading = false;
-  state.countdown = 30;
-  render();
+    S.events=allEv;S.lastFetch=new Date();updateCounts();
+    const arbs=allEv.filter(e=>e.isArb).length;
+    dlog(`✅ ${allEv.length} eventos · ${arbs} arbs · ${S.remaining??'?'} req restantes`,"ok");
+  }catch(e){if(e.message!=="Cancelado"){S.error=e.message;dlog(`ERROR: ${e.message}`,"err")}}
+  clearTimeout(safety);fetchCtrl=null;S.loading=false;S.countdown=120;render();
 }
 
-function updateSportCounts() {
-  state.sportCounts = { soccer: 0, tennis: 0, other: 0 };
-  for (const ev of state.events) {
-    if (state.sportCounts[ev.group] !== undefined) state.sportCounts[ev.group]++;
-  }
+function updateCounts(){S.sportCounts={soccer:0,tennis:0,other:0};for(const e of S.events){if(S.sportCounts[e.group]!==undefined)S.sportCounts[e.group]++}}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function dlog(msg,type){
+  S.diagLog.push({msg,type:type||"info"});
+  const el=document.getElementById("diagBox");
+  if(el){el.style.display="block";el.innerHTML=S.diagLog.map(d=>`<div class="${d.type==='ok'?'ok':d.type==='err'?'err':d.type==='warn'?'warn':''}">${d.msg}</div>`).join("");el.scrollTop=el.scrollHeight}
 }
-
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-function diagLog(msg, type) {
-  state.diagLog.push({ msg, type: type || "info" });
-  const el = document.getElementById("diagBox");
-  if (el) {
-    el.style.display = "block";
-    el.innerHTML = state.diagLog.map(d =>
-      `<div class="${d.type === 'ok' ? 'ok' : d.type === 'err' ? 'err' : d.type === 'warn' ? 'warn' : ''}">${d.msg}</div>`
-    ).join("");
-    el.scrollTop = el.scrollHeight;
-  }
-}
-
-// ── TIME HELPERS ────────────────────────────────────────────────────────────
-function fmtTime(iso) {
-  try {
-    const d = new Date(iso);
-    const now = new Date();
-    const mins = (d - now) / 60000;
-    if (mins < -60) return "Finalizado";
-    if (mins < 0) return "🔴 En curso";
-    if (mins < 60) return `⏱ ${Math.round(mins)}min`;
-    if (mins < 1440) return d.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" });
-    return d.toLocaleDateString("es-ES", { weekday: "short", day: "numeric", month: "short" });
-  } catch { return "—"; }
-}
-function minsUntil(iso) { try { return (new Date(iso) - new Date()) / 60000; } catch { return 9999; } }
-
-// ── DISPLAY LOGIC ───────────────────────────────────────────────────────────
-function getFilteredEvents() {
-  let list = [...state.events];
-
-  // Filter by sport group
-  if (state.sportFilter !== "all") {
-    list = list.filter(e => e.group === state.sportFilter);
-  }
-
-  // Filter arb only
-  if (state.showOnlyArb) {
-    list = list.filter(e => e.isArb);
-  }
-
-  // Sort
-  list.sort((a, b) => {
-    let va, vb;
-    if (state.sortKey === "profit") {
-      va = a.isArb ? (a.profit || 0) : -(a.impliedSum);
-      vb = b.isArb ? (b.profit || 0) : -(b.impliedSum);
-    } else {
-      va = minsUntil(a.commence);
-      vb = minsUntil(b.commence);
-    }
-    return state.sortDir === "desc" ? vb - va : va - vb;
-  });
-
+function fmtTime(iso){try{const d=new Date(iso),m=(d-new Date())/60000;if(m<-60)return"Finalizado";if(m<0)return"🔴 En curso";if(m<60)return`⏱ ${Math.round(m)}min`;if(m<1440)return d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}catch{return"—"}}
+function minsUntil(iso){try{return(new Date(iso)-new Date())/60000}catch{return 9999}}
+function getFiltered(){
+  let list=[...S.events];
+  if(S.sportFilter!=="all")list=list.filter(e=>e.group===S.sportFilter);
+  if(S.showOnlyArb)list=list.filter(e=>e.isArb);
+  list.sort((a,b)=>{let va,vb;if(S.sortKey==="profit"){va=a.isArb?(a.profit||0):-(a.impliedSum);vb=b.isArb?(b.profit||0):-(b.impliedSum)}else{va=minsUntil(a.commence);vb=minsUntil(b.commence)}return S.sortDir==="desc"?vb-va:va-vb});
   return list;
 }
 
-// ── AUTO REFRESH ────────────────────────────────────────────────────────────
-function startTimer() {
-  if (state._timer) clearInterval(state._timer);
-  state._timer = setInterval(() => {
-    if (!state.autoRefresh || state.loading) return;
-    state.countdown--;
-    const el = document.getElementById("tickerText");
-    if (el) el.textContent = tickerText();
-    if (state.countdown <= 0) fetchAll();
-  }, 1000);
-}
+// ═══ TIMER ═══
+function startTimer(){if(S._timer)clearInterval(S._timer);S._timer=setInterval(()=>{if(!S.autoRefresh||S.loading)return;S.countdown--;const el=document.getElementById("tickTxt");if(el)el.textContent=tickTxt();if(S.countdown<=0)fetchAll()},1000)}
+function tickTxt(){const a=S.events.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${S.events.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
 
-function tickerText() {
-  const arbs = state.events.filter(e => e.isArb).length;
-  const tf = state.lastFetch ? state.lastFetch.toLocaleTimeString("es-ES") : "—";
-  let t = `${arbs} arbs · ${state.events.length} eventos · ${tf}`;
-  if (state.autoRefresh) t += ` · auto ${state.countdown}s`;
-  return t;
-}
+// ═══ RENDER ═══
+function render(){document.getElementById("app").innerHTML=S.ok?mainHTML():setupHTML();bindAll()}
 
-// ── RENDER ───────────────────────────────────────────────────────────────────
-function render() {
-  const app = document.getElementById("app");
-  if (!state.connected) {
-    app.innerHTML = renderSetup();
-  } else {
-    app.innerHTML = renderMain();
-  }
-  bindEvents();
-}
+function setupHTML(){return`<div class="setup">
+<div class="logo-xl">Arb<span>Scout</span></div>
+<div class="setup-sub">Scanner de Arbitraje</div>
+<div class="features">
+  <div class="feat"><div class="feat-dot"></div>Cuotas reales de 10 casas DGOJ</div>
+  <div class="feat"><div class="feat-dot"></div>Modo rápido: solo ~8 req por escaneo</div>
+  <div class="feat"><div class="feat-dot"></div>Cache 5 min — no gasta req al recargar</div>
+  <div class="feat"><div class="feat-dot"></div>Tu key se guarda solo en tu navegador</div>
+</div>
+<div class="card-setup">
+  <div class="inp-label">The Odds API — API Key</div>
+  <input class="inp" id="keyInp" type="text" placeholder="Pega tu API key…" value="${S.key}" autocomplete="off" spellcheck="false">
+  <button class="btn-go" id="connBtn">Conectar y Escanear</button>
+  <div class="err-box" id="errBox"></div>
+  <div class="info-text">Key gratis en <a href="https://the-odds-api.com" target="_blank">the-odds-api.com</a><br>Gratuito: 500 req/mes · Plan $20/mes: 20K req</div>
+</div>
+<div class="diag" id="diagBox"></div>
+</div>`}
 
-// ── SETUP SCREEN ────────────────────────────────────────────────────────────
-function renderSetup() {
-  return `
-  <div class="setup">
-    <div class="logo-xl">Arb<span>Scout</span></div>
-    <div class="setup-sub">Scanner de Arbitraje</div>
-    <div class="features">
-      <div class="feat"><div class="feat-dot"></div>Cuotas reales de 10 casas DGOJ en tiempo real</div>
-      <div class="feat"><div class="feat-dot"></div>Detección automática de arbitraje con % beneficio</div>
-      <div class="feat"><div class="feat-dot"></div>Todos los deportes activos — fútbol, tenis, NBA…</div>
-      <div class="feat"><div class="feat-dot"></div>Tu API key se guarda solo en tu navegador</div>
-    </div>
-    <div class="card-setup">
-      <div class="inp-label">The Odds API — API Key</div>
-      <input class="inp" id="keyInput" type="text" placeholder="Pega tu API key aquí…" value="${state.apiKey}" autocomplete="off" spellcheck="false">
-      <button class="btn-connect" id="connectBtn">Conectar y Escanear</button>
-      <div class="err-box" id="setupError"></div>
-      <div class="info-text">
-        Consigue tu key gratis en <a href="https://the-odds-api.com" target="_blank">the-odds-api.com</a><br>
-        Plan gratuito: 500 req/mes · Básico ~€10/mes
-      </div>
-    </div>
-    <div class="diag-box" id="diagBox"></div>
-  </div>`;
-}
+function mainHTML(){return renderHdr()+(S.tab==="scanner"?renderScanner():renderCalc())+renderTicker()}
 
-// ── MAIN SCREEN ─────────────────────────────────────────────────────────────
-function renderMain() {
-  if (state.tab === "calculator") return renderHeader() + renderCalculator() + renderTicker();
-  return renderHeader() + renderScanner() + renderTicker();
-}
-
-function renderHeader() {
-  return `
-  <div class="hdr">
-    <div class="hdr-row">
-      <div class="logo">Arb<span>Scout</span></div>
-      <div class="hdr-actions">
-        ${state.remaining !== null ? `<span class="req-counter">${state.remaining} req</span>` : ""}
-        <button class="btn-sm ${state.loading ? 'loading' : ''}" id="refreshBtn">
-          <span class="spin-icon">↻</span> ${state.loading ? "Cancelar" : "Actualizar"}
-        </button>
-        <button class="btn-icon" id="logoutBtn" title="Desconectar">⏻</button>
-      </div>
-    </div>
-    <div class="tabs">
-      <button class="tab-btn ${state.tab === 'scanner' ? 'active' : ''}" data-tab="scanner">Scanner</button>
-      <button class="tab-btn ${state.tab === 'calculator' ? 'active' : ''}" data-tab="calculator">Calculadora</button>
-    </div>
-  </div>`;
-}
-
-function renderScanner() {
-  const display = getFilteredEvents();
-  const arbs = state.events.filter(e => e.isArb).length;
-  const best = state.events.filter(e => e.isArb).sort((a, b) => b.profit - a.profit)[0];
-  const sc = state.sportCounts;
-
-  const sortArrow = state.sortDir === "desc" ? "↓" : "↑";
-  const profitClass = state.sortKey === "profit" ? state.sortDir : "";
-  const timeClass = state.sortKey === "time" ? state.sortDir : "";
-
-  return `
-  <div class="stats-row">
-    <div class="stat-cell"><div class="stat-val" style="color:var(--accent)">${arbs}</div><div class="stat-lbl">Arbs</div></div>
-    <div class="stat-cell"><div class="stat-val" style="color:var(--amber)">${best ? "+" + best.profit.toFixed(1) + "%" : "—"}</div><div class="stat-lbl">Mejor</div></div>
-    <div class="stat-cell"><div class="stat-val" style="color:var(--blue)">${state.events.length}</div><div class="stat-lbl">Eventos</div></div>
-    <div class="stat-cell"><div class="stat-val" style="color:var(--purple)">${display.length}</div><div class="stat-lbl">Visibles</div></div>
+function renderHdr(){return`<div class="hdr">
+<div class="hdr-row">
+  <div class="logo">Arb<span>Scout</span></div>
+  <div class="hdr-actions">
+    <button class="btn-sm ${S.loading?'loading':''}" id="refBtn"><span class="si">↻</span> ${S.loading?"Cancelar":"Escanear"}</button>
+    <button class="btn-icon" id="logBtn" title="Desconectar">⏻</button>
   </div>
+</div>
+<div class="tabs">
+  <button class="tab-btn ${S.tab==='scanner'?'active':''}" data-tab="scanner">Scanner</button>
+  <button class="tab-btn ${S.tab==='calculator'?'active':''}" data-tab="calculator">Calculadora</button>
+</div>
+</div>`}
 
-  <div class="status">
-    <div class="status-left">
-      <div class="dot ${state.loading ? 'loading' : state.error ? 'error' : 'ok'}"></div>
-      <span class="status-text">${
-        state.loading ? "Escaneando cuotas en tiempo real…" :
-        state.error ? state.error :
-        state.lastFetch ? `Actualizado ${state.lastFetch.toLocaleTimeString("es-ES")}` :
-        "Pulsa Actualizar para escanear"
-      }</span>
-    </div>
-    ${state.remaining !== null ? `<span style="white-space:nowrap;flex-shrink:0">${state.remaining} req</span>` : ""}
+function renderBudget(){
+  if(S.remaining===null&&S.used===null)return"";
+  const total=(S.remaining||0)+(S.used||0);
+  const pct=total>0?Math.round(((S.remaining||0)/total)*100):0;
+  const color=pct>30?"var(--accent)":pct>10?"var(--amber)":"var(--red)";
+  const cls=pct>30?"color:var(--accent)":"color:var(--amber)";
+  return`<div class="budget"><span style="flex-shrink:0;font-weight:600;${cls}">${S.remaining??'?'} req</span><div class="budget-bar"><div class="budget-fill" style="width:${pct}%;background:${color}"></div></div><span class="budget-text">de ${total}</span></div>`
+}
+
+function renderScanMode(){
+  const smartN=S.allSportKeys.filter(k=>TOP_SPORTS.includes(k)).length||"~8";
+  const fullN=S.allSportKeys.length||"~35";
+  return`<div class="scan-mode">
+  <div class="scan-opt ${S.scanMode==='smart'?'active':''}" data-mode="smart">
+    <div class="scan-opt-t">⚡ Rápido</div><div class="scan-opt-d">Ligas top</div><div class="scan-opt-c">~${smartN} req</div>
   </div>
-
-  <div class="chips-row">
-    ${Object.entries(GROUPS).map(([key, label]) => {
-      const count = key === "all" ? state.events.length : (sc[key] || 0);
-      return `<button class="chip ${state.sportFilter === key ? 'active' : ''}" data-sport="${key}">${label}<span class="chip-count">${count}</span></button>`;
-    }).join("")}
+  <div class="scan-opt ${S.scanMode==='full'?'active':''}" data-mode="full">
+    <div class="scan-opt-t">🌍 Completo</div><div class="scan-opt-d">Todo</div><div class="scan-opt-c">~${fullN} req</div>
   </div>
+</div>`}
 
-  <div class="filter-row">
-    <span class="filter-label">Orden:</span>
-    <button class="sort-btn ${profitClass}" data-sort="profit">Rentab. ${state.sortKey === "profit" ? sortArrow : "↕"}</button>
-    <button class="sort-btn ${timeClass}" data-sort="time">Hora ${state.sortKey === "time" ? sortArrow : "↕"}</button>
-    <button class="arb-toggle ${state.showOnlyArb ? 'active' : ''}" id="arbToggle">Solo arb</button>
-  </div>
+function renderScanner(){
+  const disp=getFiltered(),arbs=S.events.filter(e=>e.isArb).length,best=S.events.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0],sc=S.sportCounts;
+  const sa=S.sortDir==="desc"?"↓":"↑";
+  return`${renderBudget()}${renderScanMode()}
+<div class="stats-row">
+  <div class="stat-cell"><div class="stat-val" style="color:var(--accent)">${arbs}</div><div class="stat-lbl">Arbs</div></div>
+  <div class="stat-cell"><div class="stat-val" style="color:var(--amber)">${best?"+"+best.profit.toFixed(1)+"%":"—"}</div><div class="stat-lbl">Mejor</div></div>
+  <div class="stat-cell"><div class="stat-val" style="color:var(--blue)">${S.events.length}</div><div class="stat-lbl">Eventos</div></div>
+  <div class="stat-cell"><div class="stat-val" style="color:var(--purple)">${disp.length}</div><div class="stat-lbl">Visibles</div></div>
+</div>
+<div class="status"><div class="status-left"><div class="dot ${S.loading?'loading':S.error?'error':'ok'}"></div><span class="status-text">${S.loading?"Escaneando…":S.error?S.error:S.lastFetch?`Actualizado ${S.lastFetch.toLocaleTimeString("es-ES")}`:"Pulsa Escanear"}</span></div></div>
+<div class="chips-row">${Object.entries(GLBL).map(([k,l])=>{const c=k==="all"?S.events.length:(sc[k]||0);return`<button class="chip ${S.sportFilter===k?'active':''}" data-sport="${k}">${l}<span class="cc">${c}</span></button>`}).join("")}</div>
+<div class="filter-row"><span class="flbl">Orden:</span>
+  <button class="sort-btn ${S.sortKey==='profit'?S.sortDir:''}" data-sort="profit">Rentab. ${S.sortKey==='profit'?sa:'↕'}</button>
+  <button class="sort-btn ${S.sortKey==='time'?S.sortDir:''}" data-sort="time">Hora ${S.sortKey==='time'?sa:'↕'}</button>
+  <button class="arb-toggle ${S.showOnlyArb?'active':''}" id="arbBtn">Solo arb</button>
+</div>
+<div class="stake-row"><span class="stake-lbl">€</span>${[50,100,200,300,500].map(v=>`<button class="schip ${!S.isCustom&&S.stake===v?'active':''}" data-stake="${v}">${v}</button>`).join("")}<input class="sinp2 ${S.isCustom?'active':''}" id="custStake" type="number" min="1" max="500" placeholder="Otro" value="${S.customStake}"></div>
+${S.events.length?`<div class="meta-row"><strong>${disp.length}</strong> de ${S.events.length}${S.showOnlyArb?" · solo arb":""}</div>`:""}
+<div class="content" id="evList">
+  ${S.loading&&!S.events.length?skels(6):""}
+  ${!S.loading&&!S.events.length&&!S.error?`<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Pulsa <strong>Escanear</strong> para consultar cuotas DGOJ</div></div>`:""}
+  ${S.error&&!S.events.length?`<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text" style="color:var(--red)">${S.error}</div><button class="btn-sm" id="retryBtn" style="margin-top:10px">Reintentar</button></div>`:""}
+  ${disp.map(ev=>evCard(ev)).join("")}
+</div>`}
 
-  <div class="stake-row">
-    <span class="stake-label">€</span>
-    ${[50, 100, 200, 300, 500].map(v =>
-      `<button class="stake-chip ${!state.isCustom && state.stake === v ? 'active' : ''}" data-stake="${v}">${v}</button>`
-    ).join("")}
-    <input class="stake-input ${state.isCustom ? 'active' : ''}" id="customStake" type="number" min="1" max="500" placeholder="Otro" value="${state.customStake}">
-  </div>
+function evCard(ev){
+  const open=S.expanded===ev.id,ds=S.detailStakes[ev.id]??S.stake,mx=Math.max(...ev.legs.map(l=>l.odds));
+  return`<div class="ev ${ev.isArb?'arb':''}" data-evid="${ev.id}"><div class="ev-bar"></div>
+<div class="ev-head" data-exp="${ev.id}">
+  <div class="ev-left"><div class="ev-meta"><span class="ev-tour">${ev.tournament}</span><span class="ev-sep">·</span><span class="ev-time">${fmtTime(ev.commence)}</span><span class="ev-sep">·</span><span style="font-size:8px;color:var(--muted)">${ev.bookCount} casas</span></div><div class="ev-match">${ev.match}</div><span class="ev-sport">${GICON[ev.group]||"🏆"} ${ev.sport}</span></div>
+  <div class="ev-right">${ev.isArb?`<div class="badge-arb">+${ev.profit.toFixed(2)}%</div>`:`<div class="badge-none">Sin arb</div>`}<div class="ev-impl">Σ ${(ev.impliedSum*100).toFixed(1)}%</div></div>
+  <div class="ev-chev ${open?'open':''}">▼</div>
+</div>
+<div class="ev-odds">${ev.legs.map(l=>`<div class="oc ${ev.isArb&&l.odds===mx?'best':''}"><div class="oc-n">${l.label}</div><div class="oc-v">${parseFloat(l.odds).toFixed(2)}</div><div class="oc-b">${l.book}</div></div>`).join("")}</div>
+${open?detailHTML(ev,ds):""}</div>`}
 
-  ${state.events.length ? `<div class="meta-row"><span><strong>${display.length}</strong> de ${state.events.length} eventos${state.showOnlyArb ? " · solo arb" : ""}</span></div>` : ""}
+function detailHTML(ev,amt){
+  const{sum,isArb,profit}=calcArb(ev.legs),legs=calcStakes(ev.legs,amt),net=isArb?+((amt/sum)-amt).toFixed(2):null;
+  return`<div class="detail">
+<div class="rbox ${isArb?'win':'lose'}">${isArb?`<div class="r-pct">+${profit.toFixed(2)}%</div><div class="r-info"><div class="r-tag">✦ Arbitraje</div><div class="r-profit">€${net} netos</div></div>`:`<div class="r-no">Sin arbitraje</div><div class="r-info"><div class="r-mg">Margen</div><div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--text2)">+${((sum-1)*100).toFixed(2)}%</div></div>`}</div>
+<div class="inv-row"><span class="inv-lbl">Inversión (máx €500)</span><span class="inv-e">€</span><input class="inv-i" type="number" min="1" max="500" value="${amt}" data-ds="${ev.id}"></div>
+<div class="lgrid">${legs.map(l=>`<div class="lc"><div class="lc-top"><span class="lc-name">${l.label}</span><span class="lc-odds">${parseFloat(l.odds).toFixed(2)}</span></div><div class="lc-book">📌 ${l.book}</div><div class="lc-amts"><div class="la s"><div class="la-v">€${l.stake}</div><div class="la-l">Apostar</div></div><div class="la r"><div class="la-v">€${l.payout}</div><div class="la-l">Retorno</div></div></div>${l.allOpts?.length>1?`<div class="comp"><div class="comp-t">Comparativa</div>${l.allOpts.map((o,i)=>`<div class="comp-r ${i===0?'top':''}"><span class="comp-n">${o.book}</span><span class="comp-o">${parseFloat(o.odds).toFixed(2)}</span></div>`).join("")}</div>`:""}</div>`).join("")}</div>
+${isArb?`<div class="ibox">💡 Σ ${(sum*100).toFixed(2)}% — retorno <strong>€${(amt/sum).toFixed(2)}</strong> · ${ev.bookCount} casas DGOJ</div>`:""}</div>`}
 
-  <div class="content" id="eventList">
-    ${state.loading && !state.events.length ? renderSkeletons(8) : ""}
-    ${!state.loading && !state.events.length && !state.error ? `
-      <div class="empty">
-        <div class="empty-icon">📡</div>
-        <div class="empty-text">Pulsa <strong>Actualizar</strong> para escanear cuotas reales de las 10 casas DGOJ</div>
-      </div>` : ""}
-    ${state.error && !state.events.length ? `
-      <div class="empty">
-        <div class="empty-icon">⚠️</div>
-        <div class="empty-text" style="color:var(--red)">${state.error}</div>
-        <button class="btn-sm" id="retryBtn" style="margin-top:10px">Reintentar</button>
-      </div>` : ""}
-    ${display.map(ev => renderEventCard(ev)).join("")}
-  </div>`;
+function renderCalc(){
+  const legs=S.calcLegs,valid=legs.every(l=>l.odds&&parseFloat(l.odds)>1),arb=valid?calcArb(legs.map(l=>({...l,odds:parseFloat(l.odds)}))):null,ws=valid?calcStakes(legs.map(l=>({...l,odds:parseFloat(l.odds)})),S.calcStake):[];
+  return`<div class="content"><div class="calc"><div class="calc-t">Calculadora manual</div>
+${legs.map((l,i)=>`<div class="calc-card"><div class="calc-row"><div class="calc-f"><div class="calc-lbl">Resultado</div><input class="calc-inp" data-ci="${i}" data-cf="label" value="${l.label}"></div><div class="calc-f"><div class="calc-lbl">Casa</div><input class="calc-inp" data-ci="${i}" data-cf="book" value="${l.book}"></div></div><div class="calc-lbl">Cuota</div><input class="calc-oinp" type="number" step="0.01" min="1.01" placeholder="2.05" data-ci="${i}" data-cf="odds" value="${l.odds}"></div>`).join("")}
+<div class="calc-btns"><button class="calc-btn calc-add" id="cAdd">+ Añadir</button>${legs.length>2?`<button class="calc-btn calc-del" id="cDel">− Quitar</button>`:""}</div>
+<div class="inv-row" style="margin-bottom:14px"><span class="inv-lbl">Inversión</span><span class="inv-e">€</span><input class="inv-i" id="cStake" type="number" min="1" max="500" value="${S.calcStake}"></div>
+${valid&&arb?(arb.isArb?`<div style="border-radius:var(--radius);padding:14px;margin-bottom:14px;background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.2)"><div style="font-family:var(--display);font-size:46px;font-weight:900;color:var(--accent);line-height:1">+${arb.profit.toFixed(2)}%</div><div style="font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-top:5px">✦ Arbitraje ✦</div><div style="font-size:13px;color:var(--text);margin-top:6px">Beneficio: <strong>€${((S.calcStake/arb.sum)-S.calcStake).toFixed(2)}</strong></div></div>`:`<div style="border-radius:var(--radius);padding:12px;margin-bottom:14px;background:rgba(90,112,144,.06);border:1px solid var(--border)"><div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--text2)">Sin arb — margen +${((arb.sum-1)*100).toFixed(2)}%</div></div>`):""}
+${valid&&ws.length?`<div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Distribución</div><div class="lgrid">${ws.map(l=>`<div class="lc"><div class="lc-top"><span class="lc-name">${l.label}</span><span class="lc-odds">${parseFloat(l.odds).toFixed(2)}</span></div><div class="lc-book">📌 ${l.book}</div><div class="lc-amts"><div class="la s"><div class="la-v">€${l.stake}</div><div class="la-l">Apostar</div></div><div class="la r"><div class="la-v">€${l.payout}</div><div class="la-l">Retorno</div></div></div></div>`).join("")}</div>`:""}
+${!valid?`<div class="empty" style="padding:30px"><div class="empty-icon">🧮</div><div class="empty-text">Introduce cuotas > 1.00</div></div>`:""}</div></div>`}
+
+function renderTicker(){return`<div class="ticker"><div class="ticker-left"><div class="ticker-dot ${S.loading?'loading':'ok'}"></div><span id="tickTxt">${tickTxt()}</span></div><button class="auto-btn ${S.autoRefresh?'on':''}" id="autoBtn">Auto ${S.autoRefresh?"ON 2min":"OFF"}</button></div>`}
+
+function skels(n){return Array.from({length:n}).map(()=>`<div class="sk"><div class="sk-l sk-s"></div><div class="sk-l sk-w"></div><div class="sk-l sk-m"></div><div class="sk-bx"><div class="sk-b"></div><div class="sk-b"></div><div class="sk-b"></div></div></div>`).join("")}
+
+// ═══ BIND ═══
+function bindAll(){
+  const $=id=>document.getElementById(id),$$=s=>document.querySelectorAll(s);
+  const cb=$("connBtn");
+  if(cb){const ki=$("keyInp");const go=async()=>{const key=ki.value.trim();if(!key)return;const eb=$("errBox");eb.style.display="none";cb.disabled=true;cb.textContent="Verificando…";S.diagLog=[];dlog("Verificando…");
+    try{const r=await apiGet(`${API}/sports?apiKey=${key}`);
+      if(r.status===401){dlog("✗ Key inválida","err");eb.textContent="API key inválida";eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
+      const rem=r.headers.get("x-requests-remaining"),used=r.headers.get("x-requests-used");
+      if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used);
+      if(S.remaining!==null&&S.remaining<1){dlog("✗ 0 req restantes","err");eb.textContent="Sin requests este mes. Renueva en the-odds-api.com o espera al próximo ciclo.";eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
+      dlog(`✓ Key OK · ${S.remaining} req restantes`,"ok");
+      localStorage.setItem("arb_key",key);S.key=key;S.ok=true;render();fetchAll();startTimer();
+    }catch(e){dlog("✗ "+e.message,"err");eb.textContent="Error: "+e.message;eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear"}};
+    cb.onclick=go;ki.onkeydown=e=>{if(e.key==="Enter")go()}}
+  const lb=$("logBtn");if(lb)lb.onclick=()=>{localStorage.removeItem("arb_key");sessionStorage.clear();Object.assign(S,{key:"",ok:false,events:[],error:null,remaining:null,used:null,lastFetch:null,allSportKeys:[]});if(S._timer)clearInterval(S._timer);render()};
+  const rb=$("refBtn");if(rb)rb.onclick=()=>{S.loading?cancelFetch():fetchAll()};
+  const rt=$("retryBtn");if(rt)rt.onclick=()=>fetchAll();
+  $$("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;render()});
+  $$("[data-mode]").forEach(b=>b.onclick=()=>{S.scanMode=b.dataset.mode;localStorage.setItem("arb_mode",S.scanMode);render()});
+  $$("[data-sport]").forEach(b=>b.onclick=()=>{S.sportFilter=b.dataset.sport;render()});
+  $$("[data-sort]").forEach(b=>b.onclick=()=>{if(S.sortKey===b.dataset.sort)S.sortDir=S.sortDir==="desc"?"asc":"desc";else{S.sortKey=b.dataset.sort;S.sortDir="desc"}render()});
+  const ab=$("arbBtn");if(ab)ab.onclick=()=>{S.showOnlyArb=!S.showOnlyArb;render()};
+  $$("[data-stake]").forEach(b=>b.onclick=()=>{S.stake=parseInt(b.dataset.stake);S.isCustom=false;S.customStake="";render()});
+  const cs=$("custStake");if(cs)cs.oninput=e=>{S.customStake=e.target.value;S.isCustom=true;S.stake=Math.min(500,Math.max(1,parseFloat(e.target.value)||1))};
+  $$("[data-exp]").forEach(el=>el.onclick=()=>{S.expanded=S.expanded===el.dataset.exp?null:el.dataset.exp;render()});
+  $$("[data-ds]").forEach(inp=>inp.oninput=e=>{const id=e.target.dataset.ds;S.detailStakes[id]=Math.min(500,Math.max(1,parseFloat(e.target.value)||1));const ev=S.events.find(x=>x.id===id),c=document.querySelector(`[data-evid="${id}"] .detail`);if(ev&&c){c.outerHTML=detailHTML(ev,S.detailStakes[id]);bindAll()}});
+  const atb=$("autoBtn");if(atb)atb.onclick=()=>{S.autoRefresh=!S.autoRefresh;if(S.autoRefresh)startTimer();render()};
+  $$("[data-ci]").forEach(inp=>inp.oninput=e=>{const i=parseInt(e.target.dataset.ci),f=e.target.dataset.cf;S.calcLegs[i][f]=e.target.value;render();const el=document.querySelector(`[data-ci="${i}"][data-cf="${f}"]`);if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}});
+  const ca=$("cAdd");if(ca)ca.onclick=()=>{S.calcLegs.push({label:`Opción ${S.calcLegs.length+1}`,book:"Casa",odds:""});render()};
+  const cd=$("cDel");if(cd)cd.onclick=()=>{if(S.calcLegs.length>2)S.calcLegs.pop();render()};
+  const csi=$("cStake");if(csi)csi.oninput=e=>{S.calcStake=Math.min(500,Math.max(1,parseFloat(e.target.value)||1));render();const el=$("cStake");if(el){el.focus();el.setSelectionRange(el.value.length,el.value.length)}};
 }
 
-function renderEventCard(ev) {
-  const open = state.expanded === ev.id;
-  const dStake = state.detailStakes[ev.id] ?? state.stake;
-  return `
-  <div class="ev ${ev.isArb ? 'arb' : ''}" data-evid="${ev.id}">
-    <div class="ev-bar"></div>
-    <div class="ev-head" data-expand="${ev.id}">
-      <div class="ev-left">
-        <div class="ev-meta">
-          <span class="ev-tour">${ev.tournament}</span>
-          <span class="ev-sep">·</span>
-          <span class="ev-time">${fmtTime(ev.commence)}</span>
-          <span class="ev-sep">·</span>
-          <span style="font-size:8px;color:var(--muted)">${ev.bookCount} casas</span>
-        </div>
-        <div class="ev-match">${ev.match}</div>
-        <span class="ev-sport">${ev.group === "soccer" ? "⚽" : ev.group === "tennis" ? "🎾" : "🏀"} ${ev.sport}</span>
-      </div>
-      <div class="ev-right">
-        ${ev.isArb
-          ? `<div class="badge-arb">+${ev.profit.toFixed(2)}%</div>`
-          : `<div class="badge-none">Sin arb</div>`}
-        <div class="ev-impl">Σ ${(ev.impliedSum * 100).toFixed(1)}%</div>
-      </div>
-      <div class="ev-chev ${open ? 'open' : ''}">▼</div>
-    </div>
-    <div class="ev-odds">
-      ${ev.legs.map((l, i) => `
-        <div class="odd-cell ${ev.isArb && l.odds === Math.max(...ev.legs.map(x => x.odds)) ? 'best' : ''}">
-          <div class="odd-name">${l.label}</div>
-          <div class="odd-val">${parseFloat(l.odds).toFixed(2)}</div>
-          <div class="odd-book">${l.book}</div>
-        </div>`).join("")}
-    </div>
-    ${open ? renderDetail(ev, dStake) : ""}
-  </div>`;
-}
-
-function renderDetail(ev, amt) {
-  const { sum, isArb, profit } = calcArb(ev.legs);
-  const legs = calcStakes(ev.legs, amt);
-  const net = isArb ? +((amt / sum) - amt).toFixed(2) : null;
-
-  return `
-  <div class="detail">
-    <div class="result-box ${isArb ? 'win' : 'lose'}">
-      ${isArb ? `
-        <div class="result-pct">+${profit.toFixed(2)}%</div>
-        <div class="result-info">
-          <div class="result-tag">✦ Arbitraje</div>
-          <div class="result-profit">€${net} netos</div>
-        </div>
-      ` : `
-        <div class="result-no">Sin arbitraje</div>
-        <div class="result-info">
-          <div class="result-margin">Margen casa</div>
-          <div style="font-family:var(--display);font-size:13px;font-weight:700;color:var(--text2)">+${((sum - 1) * 100).toFixed(2)}%</div>
-        </div>
-      `}
-    </div>
-
-    <div class="invest-row">
-      <span class="invest-label">Inversión (máx €500)</span>
-      <span class="invest-euro">€</span>
-      <input class="invest-inp" type="number" min="1" max="500" value="${amt}" data-detail-stake="${ev.id}">
-    </div>
-
-    <div class="legs-grid">
-      ${legs.map(l => `
-        <div class="leg-card">
-          <div class="leg-top">
-            <span class="leg-name">${l.label}</span>
-            <span class="leg-odds">${parseFloat(l.odds).toFixed(2)}</span>
-          </div>
-          <div class="leg-book">📌 ${l.book}</div>
-          <div class="leg-amounts">
-            <div class="leg-amt stake"><div class="leg-amt-val">€${l.stake}</div><div class="leg-amt-lbl">Apostar</div></div>
-            <div class="leg-amt ret"><div class="leg-amt-val">€${l.payout}</div><div class="leg-amt-lbl">Retorno</div></div>
-          </div>
-          ${l.allOpts && l.allOpts.length > 1 ? `
-            <div class="compare-section">
-              <div class="compare-title">Comparativa casas DGOJ</div>
-              ${l.allOpts.map((o, i) => `
-                <div class="compare-row ${i === 0 ? 'top' : ''}">
-                  <span class="compare-name">${o.book}</span>
-                  <span class="compare-odds">${parseFloat(o.odds).toFixed(2)}</span>
-                </div>`).join("")}
-            </div>` : ""}
-        </div>`).join("")}
-    </div>
-
-    ${isArb ? `
-      <div class="info-box">
-        💡 Σ implícita ${(sum * 100).toFixed(2)}% — retorno garantizado <strong>€${(amt / sum).toFixed(2)}</strong> · ${ev.bookCount} casas DGOJ comparadas
-      </div>` : ""}
-  </div>`;
-}
-
-// ── CALCULATOR ──────────────────────────────────────────────────────────────
-function renderCalculator() {
-  const legs = state.calcLegs;
-  const valid = legs.every(l => l.odds && parseFloat(l.odds) > 1);
-  const arb = valid ? calcArb(legs.map(l => ({ ...l, odds: parseFloat(l.odds) }))) : null;
-  const withStakes = valid ? calcStakes(legs.map(l => ({ ...l, odds: parseFloat(l.odds) })), state.calcStake) : [];
-
-  return `
-  <div class="content">
-    <div class="calc">
-      <div class="calc-title">Calculadora manual de arbitraje</div>
-
-      ${legs.map((l, i) => `
-        <div class="calc-card">
-          <div class="calc-fields">
-            <div class="calc-field">
-              <div class="calc-label">Resultado</div>
-              <input class="calc-inp" data-calc="${i}" data-field="label" value="${l.label}">
-            </div>
-            <div class="calc-field">
-              <div class="calc-label">Casa</div>
-              <input class="calc-inp" data-calc="${i}" data-field="book" value="${l.book}">
-            </div>
-          </div>
-          <div class="calc-label">Cuota decimal</div>
-          <input class="calc-odds-inp" type="number" step="0.01" min="1.01" placeholder="2.05" data-calc="${i}" data-field="odds" value="${l.odds}">
-        </div>`).join("")}
-
-      <div class="calc-btns">
-        <button class="calc-btn calc-add" id="calcAdd">+ Añadir pata</button>
-        ${legs.length > 2 ? `<button class="calc-btn calc-del" id="calcDel">− Quitar</button>` : ""}
-      </div>
-
-      <div class="invest-row" style="margin-bottom:14px">
-        <span class="invest-label">Inversión (máx €500)</span>
-        <span class="invest-euro">€</span>
-        <input class="invest-inp" id="calcStakeInp" type="number" min="1" max="500" value="${state.calcStake}">
-      </div>
-
-      ${valid && arb ? (arb.isArb ? `
-        <div class="calc-result win">
-          <div style="font-family:var(--display);font-size:46px;font-weight:900;color:var(--accent);line-height:1">+${arb.profit.toFixed(2)}%</div>
-          <div style="font-size:10px;color:var(--accent);letter-spacing:2px;text-transform:uppercase;margin-top:5px">✦ Arbitraje Detectado ✦</div>
-          <div style="font-size:13px;color:var(--text);margin-top:6px">Beneficio neto: <strong>€${((state.calcStake / arb.sum) - state.calcStake).toFixed(2)}</strong></div>
-        </div>` : `
-        <div class="calc-result lose">
-          <div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--text2)">Sin arbitraje — margen +${((arb.sum - 1) * 100).toFixed(2)}%</div>
-        </div>`) : ""}
-
-      ${valid && withStakes.length ? `
-        <div style="font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Distribución de apuestas</div>
-        <div class="legs-grid">
-          ${withStakes.map(l => `
-            <div class="leg-card">
-              <div class="leg-top"><span class="leg-name">${l.label}</span><span class="leg-odds">${parseFloat(l.odds).toFixed(2)}</span></div>
-              <div class="leg-book">📌 ${l.book}</div>
-              <div class="leg-amounts">
-                <div class="leg-amt stake"><div class="leg-amt-val">€${l.stake}</div><div class="leg-amt-lbl">Apostar</div></div>
-                <div class="leg-amt ret"><div class="leg-amt-val">€${l.payout}</div><div class="leg-amt-lbl">Retorno</div></div>
-              </div>
-            </div>`).join("")}
-        </div>` : ""}
-
-      ${!valid ? `
-        <div class="empty" style="padding:30px">
-          <div class="empty-icon">🧮</div>
-          <div class="empty-text">Introduce cuotas decimales > 1.00 para calcular</div>
-        </div>` : ""}
-    </div>
-  </div>`;
-}
-
-// ── TICKER ───────────────────────────────────────────────────────────────────
-function renderTicker() {
-  return `
-  <div class="ticker">
-    <div class="ticker-left">
-      <div class="ticker-dot ${state.loading ? 'loading' : 'ok'}"></div>
-      <span id="tickerText">${tickerText()}</span>
-    </div>
-    <button class="auto-toggle ${state.autoRefresh ? 'active' : ''}" id="autoToggle">Auto ${state.autoRefresh ? "ON" : "OFF"}</button>
-  </div>`;
-}
-
-// ── SKELETONS ────────────────────────────────────────────────────────────────
-function renderSkeletons(n) {
-  return Array.from({ length: n }).map(() => `
-    <div class="skel">
-      <div class="skel-line skel-s"></div>
-      <div class="skel-line skel-w"></div>
-      <div class="skel-line skel-m"></div>
-      <div class="skel-boxes"><div class="skel-box"></div><div class="skel-box"></div><div class="skel-box"></div></div>
-    </div>`).join("");
-}
-
-// ── EVENT BINDING ────────────────────────────────────────────────────────────
-function bindEvents() {
-  const $ = id => document.getElementById(id);
-  const $$ = sel => document.querySelectorAll(sel);
-
-  // Setup: connect
-  const connectBtn = $("connectBtn");
-  if (connectBtn) {
-    const keyInput = $("keyInput");
-    const doConnect = async () => {
-      const key = keyInput.value.trim();
-      if (!key) return;
-      const errEl = $("setupError");
-      errEl.style.display = "none";
-      connectBtn.disabled = true;
-      connectBtn.textContent = "Verificando…";
-      state.diagLog = [{ msg: "Verificando API key…", type: "info" }];
-      $("diagBox").style.display = "block";
-      diagLog("Conectando…");
-
-      try {
-        const testUrl = `${API_BASE}/sports?apiKey=${key}`;
-        const res = await apiFetch(testUrl);
-
-        if (res.status === 401) {
-          diagLog("✗ Key inválida", "err");
-          errEl.textContent = "API key inválida. Cópiala desde the-odds-api.com → Dashboard";
-          errEl.style.display = "block";
-          connectBtn.disabled = false;
-          connectBtn.textContent = "Conectar y Escanear";
-          return;
-        }
-
-        diagLog("✓ Key válida. Iniciando…", "ok");
-        localStorage.setItem("arbscout_key", key);
-        state.apiKey = key;
-        state.connected = true;
-        render();
-        fetchAll();
-        startTimer();
-      } catch (e) {
-        diagLog("✗ Error: " + e.message, "err");
-        errEl.textContent = "Error de conexión: " + e.message;
-        errEl.style.display = "block";
-        connectBtn.disabled = false;
-        connectBtn.textContent = "Conectar y Escanear";
-      }
-    };
-    connectBtn.onclick = doConnect;
-    keyInput.onkeydown = e => { if (e.key === "Enter") doConnect(); };
-  }
-
-  // Logout
-  const logoutBtn = $("logoutBtn");
-  if (logoutBtn) logoutBtn.onclick = () => {
-    localStorage.removeItem("arbscout_key");
-    sessionStorage.clear();
-    Object.assign(state, { apiKey: "", connected: false, events: [], error: null, remaining: null, lastFetch: null });
-    if (state._timer) clearInterval(state._timer);
-    render();
-  };
-
-  // Refresh / Cancel
-  const refreshBtn = $("refreshBtn");
-  if (refreshBtn) refreshBtn.onclick = () => {
-    if (state.loading) { cancelFetch(); } else { fetchAll(); }
-  };
-
-  // Retry
-  const retryBtn = $("retryBtn");
-  if (retryBtn) retryBtn.onclick = () => fetchAll();
-
-  // Tabs
-  $$("[data-tab]").forEach(b => b.onclick = () => { state.tab = b.dataset.tab; render(); });
-
-  // Sport filter chips
-  $$("[data-sport]").forEach(b => b.onclick = () => { state.sportFilter = b.dataset.sport; render(); });
-
-  // Sort buttons
-  $$("[data-sort]").forEach(b => b.onclick = () => {
-    const key = b.dataset.sort;
-    if (state.sortKey === key) {
-      state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
-    } else {
-      state.sortKey = key;
-      state.sortDir = "desc";
-    }
-    render();
-  });
-
-  // Arb toggle
-  const arbToggle = $("arbToggle");
-  if (arbToggle) arbToggle.onclick = () => { state.showOnlyArb = !state.showOnlyArb; render(); };
-
-  // Stake presets
-  $$("[data-stake]").forEach(b => b.onclick = () => {
-    state.stake = parseInt(b.dataset.stake);
-    state.isCustom = false;
-    state.customStake = "";
-    render();
-  });
-
-  // Custom stake
-  const customStake = $("customStake");
-  if (customStake) customStake.oninput = e => {
-    state.customStake = e.target.value;
-    state.isCustom = true;
-    state.stake = Math.min(500, Math.max(1, parseFloat(e.target.value) || 1));
-  };
-
-  // Expand cards
-  $$("[data-expand]").forEach(el => el.onclick = () => {
-    const id = el.dataset.expand;
-    state.expanded = state.expanded === id ? null : id;
-    render();
-  });
-
-  // Detail stake inputs
-  $$("[data-detail-stake]").forEach(inp => inp.oninput = e => {
-    const id = e.target.dataset.detailStake;
-    state.detailStakes[id] = Math.min(500, Math.max(1, parseFloat(e.target.value) || 1));
-    // Re-render just the detail
-    const ev = state.events.find(x => x.id === id);
-    const container = document.querySelector(`[data-evid="${id}"] .detail`);
-    if (ev && container) {
-      container.outerHTML = renderDetail(ev, state.detailStakes[id]);
-      // Re-bind detail stake
-      const newInp = document.querySelector(`[data-detail-stake="${id}"]`);
-      if (newInp) newInp.oninput = e.target.oninput;
-    }
-  });
-
-  // Auto refresh toggle
-  const autoToggle = $("autoToggle");
-  if (autoToggle) autoToggle.onclick = () => {
-    state.autoRefresh = !state.autoRefresh;
-    if (state.autoRefresh) startTimer();
-    render();
-  };
-
-  // Calculator inputs
-  $$("[data-calc]").forEach(inp => inp.oninput = e => {
-    const i = parseInt(e.target.dataset.calc);
-    const field = e.target.dataset.field;
-    state.calcLegs[i][field] = e.target.value;
-    render();
-    // Restore focus
-    const sel = `[data-calc="${i}"][data-field="${field}"]`;
-    const el = document.querySelector(sel);
-    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
-  });
-
-  const calcAdd = $("calcAdd");
-  if (calcAdd) calcAdd.onclick = () => {
-    state.calcLegs.push({ label: `Opción ${state.calcLegs.length + 1}`, book: "Casa", odds: "" });
-    render();
-  };
-
-  const calcDel = $("calcDel");
-  if (calcDel) calcDel.onclick = () => {
-    if (state.calcLegs.length > 2) state.calcLegs.pop();
-    render();
-  };
-
-  const calcStakeInp = $("calcStakeInp");
-  if (calcStakeInp) calcStakeInp.oninput = e => {
-    state.calcStake = Math.min(500, Math.max(1, parseFloat(e.target.value) || 1));
-    render();
-    const el = $("calcStakeInp");
-    if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); }
-  };
-}
-
-// ── INIT ─────────────────────────────────────────────────────────────────────
-render();
-if (state.connected) {
-  fetchAll();
-  startTimer();
-}
+render();if(S.ok){fetchAll();startTimer()}
 </script>
 </body>
 </html>
