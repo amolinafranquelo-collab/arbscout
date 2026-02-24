@@ -232,7 +232,18 @@ input,button,select{font-family:inherit}
 <div id="app" class="app"></div>
 <script>
 const API="https://api.the-odds-api.com/v4";
-const ES_BOOKS={bet365:"Bet365",betfair_ex_eu:"Betfair",williamhill:"William Hill",bwin:"Bwin",unibet_es:"Unibet","888sport":"888sport",betway:"Betway",codere:"Codere",marathonbet:"Marathonbet",pinnacle:"Pinnacle"};
+// Only DGOJ-licensed bookmakers that exist in The Odds API
+const ES_BOOKS={
+  williamhill:"William Hill",
+  betfair_ex_eu:"Betfair Exchange",
+  betfair_sb_uk:"Betfair SB",
+  sport888:"888sport",
+  onexbet:"1xBet",
+  betsson:"Betsson",
+  betway:"Betway",
+  leovegas:"LeoVegas",
+  casumo:"Casumo"
+};
 function classifyKey(k){if(k.startsWith("soccer"))return"soccer";if(k.startsWith("tennis"))return"tennis";return"other"}
 const GLBL={all:"Todos",soccer:"⚽ Fútbol",tennis:"🎾 Tenis",other:"🏀 Otros"};
 const GICON={soccer:"⚽",tennis:"🎾",other:"🏀"};
@@ -247,7 +258,7 @@ const S={
   sortKey:"profit",sortDir:"desc",expanded:null,
   stake:100,customStake:"",isCustom:false,detailStakes:{},
   autoRefresh:false,countdown:120,_timer:null,
-  calcLegs:[{label:"Resultado 1",book:"Bet365",odds:""},{label:"Resultado 2",book:"William Hill",odds:""}],
+  calcLegs:[{label:"Resultado 1",book:"William Hill",odds:""},{label:"Resultado 2",book:"888sport",odds:""}],
   calcStake:100,diagLog:[],sportCounts:{soccer:0,tennis:0,other:0}
 };
 
@@ -289,10 +300,15 @@ async function fetchSport(sk){
   if(cached){dlog(`⚡ ${TITLES[sk]||sk}: cache (${cached.length})`,"ok");return cached}
   const url=`${API}/sports/${sk}/odds/?apiKey=${S.key}&regions=eu,uk&markets=h2h&oddsFormat=decimal`;
   let res;try{res=await apiGet(url)}catch(e){dlog(`✗ ${sk}: ${e.message}`,"err");return[]}
-  const rem=res.headers.get("x-requests-remaining"),used=res.headers.get("x-requests-used");
-  if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used);
-  if(res.status===401)throw new Error("API key inválida");
-  if(res.status===429){dlog("⏳ Rate limit","warn");throw new Error("RATE_LIMIT")}
+  // Try to read remaining (may be stripped by CORS proxy)
+  try{const rem=res.headers.get("x-requests-remaining"),used=res.headers.get("x-requests-used");if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used)}catch{}
+  if(res.status===401||res.status===429){
+    // Read body to distinguish "invalid key" vs "quota exhausted"
+    let body="";try{body=await res.text()}catch{}
+    const isQuota=body.toLowerCase().includes("usage")||body.toLowerCase().includes("quota")||body.toLowerCase().includes("limit")||body.toLowerCase().includes("exceeded")||body.toLowerCase().includes("subscription");
+    if(isQuota||res.status===429){dlog(`✗ Cuota agotada (${res.status})`,"err");throw new Error("QUOTA_EXHAUSTED")}
+    throw new Error("API key inválida");
+  }
   if(!res.ok||res.status===422||res.status===404)return[];
   const data=await res.json();if(!Array.isArray(data))return[];
   const events=[];
@@ -313,24 +329,20 @@ async function fetchAll(){
   if(S.loading){cancelFetch();await sleep(200)}
   fetchCtrl=new AbortController();S.loading=true;S.error=null;S.diagLog=[];
   dlog("Consultando deportes activos…");render();
-  const safety=setTimeout(()=>{if(S.loading){S.loading=false;S.lastFetch=new Date();updateCounts();render()}},60000);
+  const safety=setTimeout(()=>{if(S.loading){S.loading=false;S.error=S.error||"Timeout — intenta de nuevo";S.lastFetch=new Date();updateCounts();render()}},45000);
   try{
     const sRes=await apiGet(`${API}/sports?apiKey=${S.key}&all=false`);
     if(sRes.status===401)throw new Error("API key inválida");
     if(!sRes.ok)throw new Error(`Error ${sRes.status}`);
-    // Check remaining from /sports call too
-    const rem0=sRes.headers.get("x-requests-remaining"),used0=sRes.headers.get("x-requests-used");
-    if(rem0)S.remaining=parseInt(rem0);if(used0)S.used=parseInt(used0);
+    try{const rem0=sRes.headers.get("x-requests-remaining"),used0=sRes.headers.get("x-requests-used");if(rem0)S.remaining=parseInt(rem0);if(used0)S.used=parseInt(used0)}catch{}
 
     const all=await sRes.json();
     all.forEach(s=>{TITLES[s.key]=s.title||s.key});
     S.allSportKeys=all.map(s=>s.key);
 
-    // Check if we have requests left
+    // Early check if we know remaining is 0 or negative
     if(S.remaining!==null&&S.remaining<1){
-      S.error="0 requests restantes este mes. Renueva en the-odds-api.com";
-      dlog("✗ Sin requests restantes","err");
-      S.loading=false;clearTimeout(safety);render();return;
+      throw new Error("QUOTA_EXHAUSTED");
     }
 
     let toScan;
@@ -341,30 +353,73 @@ async function fetchAll(){
 
     const needFetch=toScan.filter(k=>!cGet(k)).length;
     const fromCache=toScan.length-needFetch;
-    dlog(`${toScan.length} deportes seleccionados (${fromCache} cache, ${needFetch} a consultar)`);
+    dlog(`${toScan.length} deportes (${fromCache} cache, ${needFetch} a consultar)`);
 
-    // Protect against burning all requests
-    if(S.remaining!==null&&needFetch>S.remaining){
-      dlog(`⚠️ Solo ${S.remaining} req — limitando consulta`,"warn");
+    // If we know remaining, limit
+    if(S.remaining!==null&&S.remaining>0&&needFetch>S.remaining){
+      dlog(`⚠️ Solo ${S.remaining} req — limitando`,"warn");
       let count=0;toScan=toScan.filter(k=>{if(cGet(k))return true;if(count<S.remaining){count++;return true}return false});
+    }
+
+    // TEST FETCH: try ONE sport first to detect quota issues before batch
+    if(needFetch>0){
+      const testKey=toScan.find(k=>!cGet(k));
+      if(testKey){
+        dlog(`Probando conexión con ${TITLES[testKey]||testKey}…`);
+        render();
+        try{
+          const testResult=await fetchSport(testKey);
+          // It worked! Continue with rest
+        }catch(e){
+          if(e.message==="QUOTA_EXHAUSTED")throw e;
+          if(e.message==="API key inválida")throw e;
+          // Other error — try to continue anyway
+          dlog(`⚠️ Test falló: ${e.message} — intentando resto…`,"warn");
+        }
+      }
     }
     render();
 
+    // Fetch remaining sports in batches
     const BATCH=3,DELAY=500;const allEv=[];
+    let consecutiveFails=0;
+
     for(let i=0;i<toScan.length;i+=BATCH){
       if(fetchCtrl?.signal.aborted)break;
+      if(consecutiveFails>=6){
+        dlog("⛔ Demasiados fallos seguidos — abortando","err");
+        break;
+      }
       const batch=toScan.slice(i,i+BATCH);
       const results=await Promise.allSettled(batch.map(k=>fetchSport(k)));
-      let hitRL=false;
-      for(const r of results){if(r.status==="fulfilled")allEv.push(...r.value);else if(r.reason?.message==="RATE_LIMIT")hitRL=true;else if(r.reason?.message==="Cancelado")break}
-      if(hitRL){dlog("⏳ Rate limit — pausa 8s…","warn");render();await sleep(8000)}
+
+      let batchOk=0;
+      for(const r of results){
+        if(r.status==="fulfilled"){allEv.push(...r.value);if(r.value.length>0)batchOk++;consecutiveFails=0}
+        else if(r.reason?.message==="QUOTA_EXHAUSTED"){throw r.reason}
+        else if(r.reason?.message==="Cancelado"){throw r.reason}
+        else if(r.reason?.message==="RATE_LIMIT"){consecutiveFails+=3}
+        else{consecutiveFails++}
+      }
+      // If entire batch returned 0 events (not just empty sports), count it
+      if(batchOk===0&&batch.every(k=>!cGet(k)))consecutiveFails+=1;
+
       if(i+BATCH<toScan.length)await sleep(DELAY);
       S.events=[...allEv];updateCounts();render();
     }
     S.events=allEv;S.lastFetch=new Date();updateCounts();
     const arbs=allEv.filter(e=>e.isArb).length;
-    dlog(`✅ ${allEv.length} eventos · ${arbs} arbs · ${S.remaining??'?'} req restantes`,"ok");
-  }catch(e){if(e.message!=="Cancelado"){S.error=e.message;dlog(`ERROR: ${e.message}`,"err")}}
+    dlog(`✅ ${allEv.length} eventos · ${arbs} arbs · ${S.remaining!==null?S.remaining+' req':'cuota desconocida'}`,"ok");
+
+  }catch(e){
+    if(e.message==="QUOTA_EXHAUSTED"){
+      S.error="⚠️ Cuota mensual agotada. Tu plan gratuito (500 req/mes) se ha consumido. Renueva en the-odds-api.com o espera al próximo mes.";
+      dlog("✗ CUOTA AGOTADA — 0 requests restantes","err");
+      dlog("💡 Consejo: el plan Rookie ($20/mes) da 20.000 req","warn");
+    }else if(e.message!=="Cancelado"){
+      S.error=e.message;dlog(`ERROR: ${e.message}`,"err");
+    }
+  }
   clearTimeout(safety);fetchCtrl=null;S.loading=false;S.countdown=120;render();
 }
 
@@ -396,7 +451,7 @@ function setupHTML(){return`<div class="setup">
 <div class="logo-xl">Arb<span>Scout</span></div>
 <div class="setup-sub">Scanner de Arbitraje</div>
 <div class="features">
-  <div class="feat"><div class="feat-dot"></div>Cuotas reales de 10 casas DGOJ</div>
+  <div class="feat"><div class="feat-dot"></div>Cuotas de 9 casas con licencia DGOJ</div>
   <div class="feat"><div class="feat-dot"></div>Modo rápido: solo ~8 req por escaneo</div>
   <div class="feat"><div class="feat-dot"></div>Cache 5 min — no gasta req al recargar</div>
   <div class="feat"><div class="feat-dot"></div>Tu key se guarda solo en tu navegador</div>
@@ -429,11 +484,11 @@ function renderHdr(){return`<div class="hdr">
 
 function renderBudget(){
   if(S.remaining===null&&S.used===null)return"";
-  const total=(S.remaining||0)+(S.used||0);
-  const pct=total>0?Math.round(((S.remaining||0)/total)*100):0;
-  const color=pct>30?"var(--accent)":pct>10?"var(--amber)":"var(--red)";
-  const cls=pct>30?"color:var(--accent)":"color:var(--amber)";
-  return`<div class="budget"><span style="flex-shrink:0;font-weight:600;${cls}">${S.remaining??'?'} req</span><div class="budget-bar"><div class="budget-fill" style="width:${pct}%;background:${color}"></div></div><span class="budget-text">de ${total}</span></div>`
+  const rem=S.remaining||0;const total=Math.max((rem)+(S.used||0),1);
+  const pct=rem>0?Math.round((rem/total)*100):0;
+  const color=rem<=0?"var(--red)":pct>30?"var(--accent)":"var(--amber)";
+  const cls=rem<=0?"color:var(--red)":pct>30?"color:var(--accent)":"color:var(--amber)";
+  return`<div class="budget"><span style="flex-shrink:0;font-weight:600;${cls}">${rem<=0?"⚠️ 0":""+rem} req</span><div class="budget-bar"><div class="budget-fill" style="width:${pct}%;background:${color}"></div></div><span class="budget-text">de ${total}</span></div>`
 }
 
 function renderScanMode(){
@@ -469,7 +524,7 @@ function renderScanner(){
 ${S.events.length?`<div class="meta-row"><strong>${disp.length}</strong> de ${S.events.length}${S.showOnlyArb?" · solo arb":""}</div>`:""}
 <div class="content" id="evList">
   ${S.loading&&!S.events.length?skels(6):""}
-  ${!S.loading&&!S.events.length&&!S.error?`<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Pulsa <strong>Escanear</strong> para consultar cuotas DGOJ</div></div>`:""}
+  ${!S.loading&&!S.events.length&&!S.error?`<div class="empty"><div class="empty-icon">📡</div><div class="empty-text">Pulsa <strong>Escanear</strong> para consultar cuotas de casas DGOJ</div></div>`:""}
   ${S.error&&!S.events.length?`<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text" style="color:var(--red)">${S.error}</div><button class="btn-sm" id="retryBtn" style="margin-top:10px">Reintentar</button></div>`:""}
   ${disp.map(ev=>evCard(ev)).join("")}
 </div>`}
@@ -513,11 +568,15 @@ function bindAll(){
   const cb=$("connBtn");
   if(cb){const ki=$("keyInp");const go=async()=>{const key=ki.value.trim();if(!key)return;const eb=$("errBox");eb.style.display="none";cb.disabled=true;cb.textContent="Verificando…";S.diagLog=[];dlog("Verificando…");
     try{const r=await apiGet(`${API}/sports?apiKey=${key}`);
-      if(r.status===401){dlog("✗ Key inválida","err");eb.textContent="API key inválida";eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
-      const rem=r.headers.get("x-requests-remaining"),used=r.headers.get("x-requests-used");
-      if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used);
-      if(S.remaining!==null&&S.remaining<1){dlog("✗ 0 req restantes","err");eb.textContent="Sin requests este mes. Renueva en the-odds-api.com o espera al próximo ciclo.";eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
-      dlog(`✓ Key OK · ${S.remaining} req restantes`,"ok");
+      if(r.status===401){
+        // Check if it's really invalid key or quota exhausted
+        let body="";try{body=await r.text()}catch{}
+        const isQuota=body.toLowerCase().includes("usage")||body.toLowerCase().includes("quota")||body.toLowerCase().includes("exceeded");
+        if(isQuota){dlog("✗ Cuota agotada","err");eb.textContent="Tu cuota mensual está agotada. Renueva en the-odds-api.com o espera al próximo ciclo.";eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
+        dlog("✗ Key inválida","err");eb.textContent="API key inválida";eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
+      try{const rem=r.headers.get("x-requests-remaining"),used=r.headers.get("x-requests-used");if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used)}catch{}
+      if(S.remaining!==null&&S.remaining<1){dlog(`✗ Cuota agotada (${S.remaining} req)`,"err");eb.textContent=`Cuota agotada (${S.remaining} req restantes). Renueva en the-odds-api.com o espera al próximo mes.`;eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear";return}
+      dlog(`✓ Key OK${S.remaining!==null?' · '+S.remaining+' req restantes':''}`,"ok");
       localStorage.setItem("arb_key",key);S.key=key;S.ok=true;render();fetchAll();startTimer();
     }catch(e){dlog("✗ "+e.message,"err");eb.textContent="Error: "+e.message;eb.style.display="block";cb.disabled=false;cb.textContent="Conectar y Escanear"}};
     cb.onclick=go;ki.onkeydown=e=>{if(e.key==="Enter")go()}}
