@@ -307,28 +307,19 @@ const calcStakes = (legs, total) => {
 
 // ── API ───────────────────────────────────────────────────────────────────────
 async function fetchSport(sport) {
-  // Try direct first, fallback to proxy
   const url = `${API}/sports/${sport}/odds/?apiKey=${S.key}&regions=eu,uk,us&markets=h2h&oddsFormat=decimal`;
-  S.diagLog.push(`Fetching ${sport}…`);
-  renderDiag();
 
   let res;
-  try {
-    res = await fetch(url);
-  } catch(e) {
-    // CORS blocked — use proxy
-    S.diagLog.push(`Direct blocked, using proxy for ${sport}…`);
-    renderDiag();
-    res = await fetch(PROXY + encodeURIComponent(url));
-  }
+  try { res = await apiGet(url); }
+  catch(e) { S.diagLog.push(`✗ ${sport}: ${e.message}`); return []; }
 
   const remaining = res.headers.get("x-requests-remaining");
   if (remaining) S.remaining = parseInt(remaining);
 
-  if (res.status === 401) throw new Error("API key inválida — verifica en the-odds-api.com");
-  if (res.status === 422) return []; // sport not available on plan
+  if (res.status === 401) throw new Error("API key inválida");
+  if (res.status === 422 || res.status === 404) return [];
   if (res.status === 429) throw new Error("Límite de peticiones alcanzado. Espera unos minutos.");
-  if (!res.ok) { S.diagLog.push(`${sport}: HTTP ${res.status}`); return []; }
+  if (!res.ok) return [];
 
   const data = await res.json();
   if (!Array.isArray(data)) return [];
@@ -376,12 +367,35 @@ async function fetchSport(sport) {
   return events;
 }
 
+async function apiGet(url) {
+  let res;
+  try { res = await fetch(url); }
+  catch(e) { res = await fetch(PROXY + encodeURIComponent(url)); }
+  return res;
+}
+
 async function fetchAll() {
-  S.loading = true; S.error = null; S.diagLog = ["Escaneando " + SPORTS.length + " competiciones en paralelo…"];
+  S.loading = true; S.error = null; S.diagLog = ["Consultando deportes disponibles…"];
   render();
 
   try {
-    const results = await Promise.allSettled(SPORTS.map(s => fetchSport(s)));
+    // Step 1: get all currently active sports from the API
+    const sportsUrl = `${API}/sports?apiKey=${S.key}&all=false`;
+    const sRes = await apiGet(sportsUrl);
+    if (sRes.status === 401) throw new Error("API key inválida");
+    if (!sRes.ok) throw new Error(`Error ${sRes.status} al obtener deportes`);
+    const allSports = await sRes.json();
+
+    // Step 2: filter to sports we know about + classify by group
+    const activeSports = allSports
+      .map(s => s.key)
+      .filter(k => SPORT_GROUP[k]); // only keys in our map
+
+    S.diagLog.push(`${activeSports.length} competiciones activas encontradas. Escaneando…`);
+    render();
+
+    // Step 3: fetch odds for all active sports in parallel
+    const results = await Promise.allSettled(activeSports.map(s => fetchSport(s)));
     const all = [];
     for (const r of results) {
       if (r.status === "fulfilled") all.push(...r.value);
@@ -392,6 +406,7 @@ async function fetchAll() {
     S.diagLog.push(`✅ ${all.length} eventos · ${all.filter(e=>e.isArb).length} arbs detectados`);
   } catch(e) {
     S.error = e.message;
+    S.diagLog.push(`ERROR: ${e.message}`);
   }
 
   S.loading = false;
