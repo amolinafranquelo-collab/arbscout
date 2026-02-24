@@ -225,55 +225,14 @@ const ES_BOOKS = {
   betway:"Betway", codere:"Codere", marathonbet:"Marathonbet", pinnacle:"Pinnacle"
 };
 
-// Sport key → group mapping
-const SPORT_GROUP = {
-  soccer_spain_la_liga:"⚽ Fútbol", soccer_england_premier_league:"⚽ Fútbol",
-  soccer_uefa_champs_league:"⚽ Fútbol", soccer_uefa_europa_league:"⚽ Fútbol",
-  soccer_germany_bundesliga:"⚽ Fútbol", soccer_italy_serie_a:"⚽ Fútbol",
-  soccer_france_ligue_one:"⚽ Fútbol", soccer_spain_segunda_division:"⚽ Fútbol",
-  soccer_netherlands_eredivisie:"⚽ Fútbol", soccer_portugal_primeira_liga:"⚽ Fútbol",
-  soccer_efl_champ:"⚽ Fútbol", soccer_belgium_first_div:"⚽ Fútbol",
-  soccer_turkey_super_league:"⚽ Fútbol", soccer_greece_super_league:"⚽ Fútbol",
-  soccer_brazil_campeonato:"⚽ Fútbol", soccer_argentina_primera_division:"⚽ Fútbol",
-  soccer_mexico_ligamx:"⚽ Fútbol", soccer_usa_mls:"⚽ Fútbol",
-  soccer_conmebol_copa_libertadores:"⚽ Fútbol", soccer_uefa_european_championship:"⚽ Fútbol",
-  tennis_atp_french_open:"🎾 Tenis", tennis_wta_french_open:"🎾 Tenis",
-  tennis_atp_us_open:"🎾 Tenis", tennis_wta_us_open:"🎾 Tenis",
-  tennis_atp_wimbledon:"🎾 Tenis", tennis_wta_wimbledon:"🎾 Tenis",
-  tennis_atp_australian_open:"🎾 Tenis", tennis_wta_australian_open:"🎾 Tenis",
-  basketball_nba:"🏀 Otros", basketball_euroleague:"🏀 Otros", basketball_nba_championship_winner:"🏀 Otros",
-  icehockey_nhl:"🏀 Otros", americanfootball_nfl:"🏀 Otros", americanfootball_ncaaf:"🏀 Otros",
-  baseball_mlb:"🏀 Otros", mma_mixed_martial_arts:"🏀 Otros",
-  rugbyleague_nrl:"🏀 Otros", rugbyunion_six_nations:"🏀 Otros",
-  cricket_icc_world_cup:"🏀 Otros", cricket_test_match:"🏀 Otros",
-  golf_pga_tour_winner:"🏀 Otros", golf_masters_tournament_winner:"🏀 Otros",
-};
-
-// All sport keys to fetch
-const SPORTS = Object.keys(SPORT_GROUP);
-
-const SPORT_NICE = {
-  soccer_spain_la_liga:"LaLiga", soccer_england_premier_league:"Premier League",
-  soccer_uefa_champs_league:"Champions League", soccer_uefa_europa_league:"Europa League",
-  soccer_germany_bundesliga:"Bundesliga", soccer_italy_serie_a:"Serie A",
-  soccer_france_ligue_one:"Ligue 1", soccer_spain_segunda_division:"Segunda División",
-  soccer_netherlands_eredivisie:"Eredivisie", soccer_portugal_primeira_liga:"Liga Portugal",
-  soccer_efl_champ:"Championship", soccer_belgium_first_div:"Jupiler Pro",
-  soccer_turkey_super_league:"Süper Lig", soccer_greece_super_league:"Super League GR",
-  soccer_brazil_campeonato:"Brasileirão", soccer_argentina_primera_division:"Liga Profesional",
-  soccer_mexico_ligamx:"Liga MX", soccer_usa_mls:"MLS",
-  soccer_conmebol_copa_libertadores:"Copa Libertadores", soccer_uefa_european_championship:"Eurocopa",
-  tennis_atp_french_open:"ATP Roland Garros", tennis_wta_french_open:"WTA Roland Garros",
-  tennis_atp_us_open:"ATP US Open", tennis_wta_us_open:"WTA US Open",
-  tennis_atp_wimbledon:"ATP Wimbledon", tennis_wta_wimbledon:"WTA Wimbledon",
-  tennis_atp_australian_open:"ATP Australian Open", tennis_wta_australian_open:"WTA Australian Open",
-  basketball_nba:"NBA", basketball_euroleague:"EuroLeague",
-  icehockey_nhl:"NHL", americanfootball_nfl:"NFL", americanfootball_ncaaf:"NCAA Football",
-  baseball_mlb:"MLB", mma_mixed_martial_arts:"MMA/UFC",
-  rugbyleague_nrl:"NRL Rugby", rugbyunion_six_nations:"Six Nations",
-  cricket_icc_world_cup:"Cricket World Cup", cricket_test_match:"Cricket Test",
-  golf_pga_tour_winner:"PGA Tour", golf_masters_tournament_winner:"Masters Golf",
-};
+// Auto-classify ANY sport key returned by the API
+function classifySport(key) {
+  if (key.startsWith("soccer"))  return "⚽ Fútbol";
+  if (key.startsWith("tennis"))  return "🎾 Tenis";
+  return "🏀 Otros";
+}
+// Human-readable names populated from /sports API response
+const SPORT_TITLE = {};
 
 // ── STATE ─────────────────────────────────────────────────────────────────────
 const S = {
@@ -353,16 +312,16 @@ async function fetchSport(sport) {
     const { sum, isArb, profit } = calcArb(legs);
 
     events.push({
-      id, sport: SPORT_NICE[sport] || sport,
-      group: SPORT_GROUP[sport] || "🏀 Otros",
+      id, sport: SPORT_TITLE[sport] || sport,
+      group: classifySport(sport),
       match: `${home_team} vs ${away_team}`,
-      tournament: SPORT_NICE[sport] || sport,
+      tournament: SPORT_TITLE[sport] || sport,
       commence: commence_time, legs, isArb, profit,
       impliedSum: sum,
       bookCount: bookmakers.filter(b => ES_BOOKS[b.key]).length,
     });
   }
-  S.diagLog.push(`✓ ${SPORT_NICE[sport]||sport}: ${events.length} eventos`);
+  S.diagLog.push(`✓ ${SPORT_TITLE[sport]||sport}: ${events.length} eventos`);
   renderDiag();
   return events;
 }
@@ -386,10 +345,9 @@ async function fetchAll() {
     if (!sRes.ok) throw new Error(`Error ${sRes.status} al obtener deportes`);
     const allSports = await sRes.json();
 
-    // Step 2: filter to sports we know about + classify by group
-    const activeSports = allSports
-      .map(s => s.key)
-      .filter(k => SPORT_GROUP[k]); // only keys in our map
+    // Step 2: use ALL active sports, populate titles
+    allSports.forEach(s => { SPORT_TITLE[s.key] = s.title || s.key; });
+    const activeSports = allSports.map(s => s.key);
 
     S.diagLog.push(`${activeSports.length} competiciones activas encontradas. Escaneando…`);
     render();
