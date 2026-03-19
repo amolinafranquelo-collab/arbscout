@@ -311,8 +311,10 @@ async function fetchSport(sk){
   }
   if(!res.ok||res.status===422||res.status===404)return[];
   const data=await res.json();if(!Array.isArray(data))return[];
-  const events=[];
+  const events=[],now=Date.now();
   for(const g of data){
+    // Skip finished events (started more than 3h ago)
+    if(g.commence_time){const ct=new Date(g.commence_time).getTime();if(now-ct>3*3600000)continue}
     if(!g.bookmakers||g.bookmakers.length<2)continue;
     const oMap={};
     for(const bk of g.bookmakers){if(!ES_BOOKS[bk.key])continue;const h2h=bk.markets?.find(m=>m.key==="h2h");if(!h2h)continue;for(const oc of h2h.outcomes){if(!oMap[oc.name])oMap[oc.name]=[];oMap[oc.name].push({book:ES_BOOKS[bk.key],bookKey:bk.key,odds:oc.price})}}
@@ -408,8 +410,10 @@ async function fetchAll(){
       S.events=[...allEv];updateCounts();render();
     }
     S.events=allEv;S.lastFetch=new Date();updateCounts();
-    const arbs=allEv.filter(e=>e.isArb).length;
-    dlog(`✅ ${allEv.length} eventos · ${arbs} arbs · ${S.remaining!==null?S.remaining+' req':'cuota desconocida'}`,"ok");
+    const now2=Date.now();
+    const activeEv=allEv.filter(e=>!e.commence||now2-new Date(e.commence).getTime()<3*3600000);
+    const arbs=activeEv.filter(e=>e.isArb).length;
+    dlog(`✅ ${activeEv.length} eventos activos · ${arbs} arbs · ${S.remaining!==null?S.remaining+' req':'cuota desconocida'}`,"ok");
 
   }catch(e){
     if(e.message==="QUOTA_EXHAUSTED"){
@@ -423,7 +427,12 @@ async function fetchAll(){
   clearTimeout(safety);fetchCtrl=null;S.loading=false;S.countdown=120;render();
 }
 
-function updateCounts(){S.sportCounts={soccer:0,tennis:0,other:0};for(const e of S.events){if(S.sportCounts[e.group]!==undefined)S.sportCounts[e.group]++}}
+function updateCounts(){
+  const now=Date.now();
+  const active=S.events.filter(e=>{if(!e.commence)return true;return now-new Date(e.commence).getTime()<3*3600000});
+  S.sportCounts={soccer:0,tennis:0,other:0};
+  for(const e of active){if(S.sportCounts[e.group]!==undefined)S.sportCounts[e.group]++}
+}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function dlog(msg,type){
   S.diagLog.push({msg,type:type||"info"});
@@ -434,6 +443,9 @@ function fmtTime(iso){try{const d=new Date(iso),m=(d-new Date())/60000;if(m<-60)
 function minsUntil(iso){try{return(new Date(iso)-new Date())/60000}catch{return 9999}}
 function getFiltered(){
   let list=[...S.events];
+  // Remove finished events (started > 3h ago)
+  const now=Date.now();
+  list=list.filter(e=>{if(!e.commence)return true;const ct=new Date(e.commence).getTime();return now-ct<3*3600000});
   if(S.sportFilter!=="all")list=list.filter(e=>e.group===S.sportFilter);
   if(S.showOnlyArb)list=list.filter(e=>e.isArb);
   list.sort((a,b)=>{let va,vb;if(S.sortKey==="profit"){va=a.isArb?(a.profit||0):-(a.impliedSum);vb=b.isArb?(b.profit||0):-(b.impliedSum)}else{va=minsUntil(a.commence);vb=minsUntil(b.commence)}return S.sortDir==="desc"?vb-va:va-vb});
@@ -442,7 +454,7 @@ function getFiltered(){
 
 // ═══ TIMER ═══
 function startTimer(){if(S._timer)clearInterval(S._timer);S._timer=setInterval(()=>{if(!S.autoRefresh||S.loading)return;S.countdown--;const el=document.getElementById("tickTxt");if(el)el.textContent=tickTxt();if(S.countdown<=0)fetchAll()},1000)}
-function tickTxt(){const a=S.events.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${S.events.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
+function tickTxt(){const now=Date.now();const active=S.events.filter(e=>!e.commence||now-new Date(e.commence).getTime()<3*3600000);const a=active.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${active.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
 
 // ═══ RENDER ═══
 function render(){document.getElementById("app").innerHTML=S.ok?mainHTML():setupHTML();bindAll()}
@@ -504,13 +516,15 @@ function renderScanMode(){
 </div>`}
 
 function renderScanner(){
-  const disp=getFiltered(),arbs=S.events.filter(e=>e.isArb).length,best=S.events.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0],sc=S.sportCounts;
+  const now=Date.now();
+  const active=S.events.filter(e=>!e.commence||now-new Date(e.commence).getTime()<3*3600000);
+  const disp=getFiltered(),arbs=active.filter(e=>e.isArb).length,best=active.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0],sc=S.sportCounts;
   const sa=S.sortDir==="desc"?"↓":"↑";
   return`${renderBudget()}${renderScanMode()}
 <div class="stats-row">
   <div class="stat-cell"><div class="stat-val" style="color:var(--accent)">${arbs}</div><div class="stat-lbl">Arbs</div></div>
   <div class="stat-cell"><div class="stat-val" style="color:var(--amber)">${best?"+"+best.profit.toFixed(1)+"%":"—"}</div><div class="stat-lbl">Mejor</div></div>
-  <div class="stat-cell"><div class="stat-val" style="color:var(--blue)">${S.events.length}</div><div class="stat-lbl">Eventos</div></div>
+  <div class="stat-cell"><div class="stat-val" style="color:var(--blue)">${active.length}</div><div class="stat-lbl">Eventos</div></div>
   <div class="stat-cell"><div class="stat-val" style="color:var(--purple)">${disp.length}</div><div class="stat-lbl">Visibles</div></div>
 </div>
 <div class="status"><div class="status-left"><div class="dot ${S.loading?'loading':S.error?'error':'ok'}"></div><span class="status-text">${S.loading?"Escaneando…":S.error?S.error:S.lastFetch?`Actualizado ${S.lastFetch.toLocaleTimeString("es-ES")}`:"Pulsa Escanear"}</span></div></div>
