@@ -313,8 +313,9 @@ async function fetchSport(sk){
   const data=await res.json();if(!Array.isArray(data))return[];
   const events=[],now=Date.now();
   for(const g of data){
-    // Skip finished events (started more than 3h ago)
-    if(g.commence_time){const ct=new Date(g.commence_time).getTime();if(now-ct>3*3600000)continue}
+    // Skip finished events based on sport duration
+    const grp=classifyKey(sk);
+    if(g.commence_time){const elapsed=(now-new Date(g.commence_time).getTime())/60000;if(elapsed>sportDuration(grp))continue}
     if(!g.bookmakers||g.bookmakers.length<2)continue;
     const oMap={};
     for(const bk of g.bookmakers){if(!ES_BOOKS[bk.key])continue;const h2h=bk.markets?.find(m=>m.key==="h2h");if(!h2h)continue;for(const oc of h2h.outcomes){if(!oMap[oc.name])oMap[oc.name]=[];oMap[oc.name].push({book:ES_BOOKS[bk.key],bookKey:bk.key,odds:oc.price})}}
@@ -410,8 +411,7 @@ async function fetchAll(){
       S.events=[...allEv];updateCounts();render();
     }
     S.events=allEv;S.lastFetch=new Date();updateCounts();
-    const now2=Date.now();
-    const activeEv=allEv.filter(e=>!e.commence||now2-new Date(e.commence).getTime()<3*3600000);
+    const activeEv=allEv.filter(e=>!isFinished(e));
     const arbs=activeEv.filter(e=>e.isArb).length;
     dlog(`✅ ${activeEv.length} eventos activos · ${arbs} arbs · ${S.remaining!==null?S.remaining+' req':'cuota desconocida'}`,"ok");
 
@@ -428,24 +428,26 @@ async function fetchAll(){
 }
 
 function updateCounts(){
-  const now=Date.now();
-  const active=S.events.filter(e=>{if(!e.commence)return true;return now-new Date(e.commence).getTime()<3*3600000});
+  const active=S.events.filter(e=>!isFinished(e));
   S.sportCounts={soccer:0,tennis:0,other:0};
   for(const e of active){if(S.sportCounts[e.group]!==undefined)S.sportCounts[e.group]++}
 }
+function sportDuration(group){return group==="soccer"?130:group==="tennis"?240:150}
+function isFinished(e){if(!e.commence)return false;const elapsed=(Date.now()-new Date(e.commence).getTime())/60000;return elapsed>sportDuration(e.group)}
+function isLive(e){if(!e.commence)return false;const elapsed=(Date.now()-new Date(e.commence).getTime())/60000;return elapsed>0&&elapsed<=sportDuration(e.group)}
+
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function dlog(msg,type){
   S.diagLog.push({msg,type:type||"info"});
   const el=document.getElementById("diagBox");
   if(el){el.style.display="block";el.innerHTML=S.diagLog.map(d=>`<div class="${d.type==='ok'?'ok':d.type==='err'?'err':d.type==='warn'?'warn':''}">${d.msg}</div>`).join("");el.scrollTop=el.scrollHeight}
 }
-function fmtTime(iso){try{const d=new Date(iso),m=(d-new Date())/60000;if(m<-60)return"Finalizado";if(m<0)return"🔴 En curso";if(m<60)return`⏱ ${Math.round(m)}min`;if(m<1440)return d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}catch{return"—"}}
+function fmtTime(iso,group){try{const d=new Date(iso),m=(d-new Date())/60000;const dur=sportDuration(group||"other");if(m<-dur)return"Finalizado";if(m<0)return"🔴 En curso";if(m<60)return`⏱ ${Math.round(m)}min`;if(m<1440)return d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}catch{return"—"}}
 function minsUntil(iso){try{return(new Date(iso)-new Date())/60000}catch{return 9999}}
 function getFiltered(){
   let list=[...S.events];
-  // Remove finished events (started > 3h ago)
-  const now=Date.now();
-  list=list.filter(e=>{if(!e.commence)return true;const ct=new Date(e.commence).getTime();return now-ct<3*3600000});
+  // Remove finished events
+  list=list.filter(e=>!isFinished(e));
   if(S.sportFilter!=="all")list=list.filter(e=>e.group===S.sportFilter);
   if(S.showOnlyArb)list=list.filter(e=>e.isArb);
   list.sort((a,b)=>{let va,vb;if(S.sortKey==="profit"){va=a.isArb?(a.profit||0):-(a.impliedSum);vb=b.isArb?(b.profit||0):-(b.impliedSum)}else{va=minsUntil(a.commence);vb=minsUntil(b.commence)}return S.sortDir==="desc"?vb-va:va-vb});
@@ -454,7 +456,7 @@ function getFiltered(){
 
 // ═══ TIMER ═══
 function startTimer(){if(S._timer)clearInterval(S._timer);S._timer=setInterval(()=>{if(!S.autoRefresh||S.loading)return;S.countdown--;const el=document.getElementById("tickTxt");if(el)el.textContent=tickTxt();if(S.countdown<=0)fetchAll()},1000)}
-function tickTxt(){const now=Date.now();const active=S.events.filter(e=>!e.commence||now-new Date(e.commence).getTime()<3*3600000);const a=active.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${active.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
+function tickTxt(){const active=S.events.filter(e=>!isFinished(e));const a=active.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${active.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
 
 // ═══ RENDER ═══
 function render(){document.getElementById("app").innerHTML=S.ok?mainHTML():setupHTML();bindAll()}
@@ -516,8 +518,7 @@ function renderScanMode(){
 </div>`}
 
 function renderScanner(){
-  const now=Date.now();
-  const active=S.events.filter(e=>!e.commence||now-new Date(e.commence).getTime()<3*3600000);
+  const active=S.events.filter(e=>!isFinished(e));
   const disp=getFiltered(),arbs=active.filter(e=>e.isArb).length,best=active.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0],sc=S.sportCounts;
   const sa=S.sortDir==="desc"?"↓":"↑";
   return`${renderBudget()}${renderScanMode()}
@@ -547,7 +548,7 @@ function evCard(ev){
   const open=S.expanded===ev.id,ds=S.detailStakes[ev.id]??S.stake,mx=Math.max(...ev.legs.map(l=>l.odds));
   return`<div class="ev ${ev.isArb?'arb':''}" data-evid="${ev.id}"><div class="ev-bar"></div>
 <div class="ev-head" data-exp="${ev.id}">
-  <div class="ev-left"><div class="ev-meta"><span class="ev-tour">${ev.tournament}</span><span class="ev-sep">·</span><span class="ev-time">${fmtTime(ev.commence)}</span><span class="ev-sep">·</span><span style="font-size:8px;color:var(--muted)">${ev.bookCount} casas</span></div><div class="ev-match">${ev.match}</div><span class="ev-sport">${GICON[ev.group]||"🏆"} ${ev.sport}</span></div>
+  <div class="ev-left"><div class="ev-meta"><span class="ev-tour">${ev.tournament}</span><span class="ev-sep">·</span><span class="ev-time">${fmtTime(ev.commence,ev.group)}</span><span class="ev-sep">·</span><span style="font-size:8px;color:var(--muted)">${ev.bookCount} casas</span></div><div class="ev-match">${ev.match}</div><span class="ev-sport">${GICON[ev.group]||"🏆"} ${ev.sport}</span></div>
   <div class="ev-right">${ev.isArb?`<div class="badge-arb">+${ev.profit.toFixed(2)}%</div>`:`<div class="badge-none">Sin arb</div>`}<div class="ev-impl">Σ ${(ev.impliedSum*100).toFixed(1)}%</div></div>
   <div class="ev-chev ${open?'open':''}">▼</div>
 </div>
