@@ -303,7 +303,6 @@ async function fetchSport(sk){
   // Try to read remaining (may be stripped by CORS proxy)
   try{const rem=res.headers.get("x-requests-remaining"),used=res.headers.get("x-requests-used");if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used)}catch{}
   if(res.status===401||res.status===429){
-    // Read body to distinguish "invalid key" vs "quota exhausted"
     let body="";try{body=await res.text()}catch{}
     const isQuota=body.toLowerCase().includes("usage")||body.toLowerCase().includes("quota")||body.toLowerCase().includes("limit")||body.toLowerCase().includes("exceeded")||body.toLowerCase().includes("subscription");
     if(isQuota||res.status===429){dlog(`✗ Cuota agotada (${res.status})`,"err");throw new Error("QUOTA_EXHAUSTED")}
@@ -311,20 +310,34 @@ async function fetchSport(sk){
   }
   if(!res.ok||res.status===422||res.status===404)return[];
   const data=await res.json();if(!Array.isArray(data))return[];
-  const events=[],now=Date.now();
+
+  // Check if any events already started → fetch scores to get real completed status
+  const now=Date.now();
+  const hasLive=data.some(g=>g.commence_time&&new Date(g.commence_time).getTime()<now);
+  let completedIds=new Set();
+  if(hasLive){
+    try{
+      const sUrl=`${API}/sports/${sk}/scores/?apiKey=${S.key}&daysFrom=1`;
+      const sRes=await apiGet(sUrl);
+      try{const rem=sRes.headers.get("x-requests-remaining"),used=sRes.headers.get("x-requests-used");if(rem)S.remaining=parseInt(rem);if(used)S.used=parseInt(used)}catch{}
+      if(sRes.ok){const scores=await sRes.json();if(Array.isArray(scores)){for(const s of scores){if(s.completed)completedIds.add(s.id)}}}
+    }catch{}
+  }
+
+  const events=[];
   for(const g of data){
-    // Skip finished events based on sport duration
-    const grp=classifyKey(sk);
-    if(g.commence_time){const elapsed=(now-new Date(g.commence_time).getTime())/60000;if(elapsed>sportDuration(grp))continue}
+    // Skip completed events (real status from API)
+    if(completedIds.has(g.id))continue;
     if(!g.bookmakers||g.bookmakers.length<2)continue;
     const oMap={};
     for(const bk of g.bookmakers){if(!ES_BOOKS[bk.key])continue;const h2h=bk.markets?.find(m=>m.key==="h2h");if(!h2h)continue;for(const oc of h2h.outcomes){if(!oMap[oc.name])oMap[oc.name]=[];oMap[oc.name].push({book:ES_BOOKS[bk.key],bookKey:bk.key,odds:oc.price})}}
     const names=Object.keys(oMap);if(names.length<2)continue;
     const legs=names.map(n=>{const opts=oMap[n].sort((a,b)=>b.odds-a.odds);return{label:n,odds:opts[0].odds,book:opts[0].book,bookKey:opts[0].bookKey,allOpts:opts}});
     const{sum,isArb,profit}=calcArb(legs);
-    events.push({id:g.id,sportKey:sk,group:classifyKey(sk),sport:TITLES[sk]||sk,match:`${g.home_team} vs ${g.away_team}`,tournament:TITLES[sk]||sk,commence:g.commence_time,legs,isArb,profit,impliedSum:sum,bookCount:g.bookmakers.filter(b=>ES_BOOKS[b.key]).length});
+    const isLive=g.commence_time&&new Date(g.commence_time).getTime()<now;
+    events.push({id:g.id,sportKey:sk,group:classifyKey(sk),sport:TITLES[sk]||sk,match:`${g.home_team} vs ${g.away_team}`,tournament:TITLES[sk]||sk,commence:g.commence_time,legs,isArb,profit,impliedSum:sum,bookCount:g.bookmakers.filter(b=>ES_BOOKS[b.key]).length,live:!!isLive});
   }
-  cSet(sk,events);dlog(`✓ ${TITLES[sk]||sk}: ${events.length} eventos`,"ok");return events;
+  cSet(sk,events);dlog(`✓ ${TITLES[sk]||sk}: ${events.length} ev${completedIds.size?` (${completedIds.size} finalizados filtrados)`:""}`,"ok");return events;
 }
 
 // ═══ MAIN FETCH ═══
@@ -411,9 +424,8 @@ async function fetchAll(){
       S.events=[...allEv];updateCounts();render();
     }
     S.events=allEv;S.lastFetch=new Date();updateCounts();
-    const activeEv=allEv.filter(e=>!isFinished(e));
-    const arbs=activeEv.filter(e=>e.isArb).length;
-    dlog(`✅ ${activeEv.length} eventos activos · ${arbs} arbs · ${S.remaining!==null?S.remaining+' req':'cuota desconocida'}`,"ok");
+    const arbs=allEv.filter(e=>e.isArb).length;
+    dlog(`✅ ${allEv.length} eventos · ${arbs} arbs · ${S.remaining!==null?S.remaining+' req':'cuota desconocida'}`,"ok");
 
   }catch(e){
     if(e.message==="QUOTA_EXHAUSTED"){
@@ -428,13 +440,9 @@ async function fetchAll(){
 }
 
 function updateCounts(){
-  const active=S.events.filter(e=>!isFinished(e));
   S.sportCounts={soccer:0,tennis:0,other:0};
-  for(const e of active){if(S.sportCounts[e.group]!==undefined)S.sportCounts[e.group]++}
+  for(const e of S.events){if(S.sportCounts[e.group]!==undefined)S.sportCounts[e.group]++}
 }
-function sportDuration(group){return group==="soccer"?130:group==="tennis"?240:150}
-function isFinished(e){if(!e.commence)return false;const elapsed=(Date.now()-new Date(e.commence).getTime())/60000;return elapsed>sportDuration(e.group)}
-function isLive(e){if(!e.commence)return false;const elapsed=(Date.now()-new Date(e.commence).getTime())/60000;return elapsed>0&&elapsed<=sportDuration(e.group)}
 
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 function dlog(msg,type){
@@ -442,12 +450,10 @@ function dlog(msg,type){
   const el=document.getElementById("diagBox");
   if(el){el.style.display="block";el.innerHTML=S.diagLog.map(d=>`<div class="${d.type==='ok'?'ok':d.type==='err'?'err':d.type==='warn'?'warn':''}">${d.msg}</div>`).join("");el.scrollTop=el.scrollHeight}
 }
-function fmtTime(iso,group){try{const d=new Date(iso),m=(d-new Date())/60000;const dur=sportDuration(group||"other");if(m<-dur)return"Finalizado";if(m<0)return"🔴 En curso";if(m<60)return`⏱ ${Math.round(m)}min`;if(m<1440)return d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}catch{return"—"}}
+function fmtTime(iso,ev){try{const d=new Date(iso),m=(d-new Date())/60000;if(ev&&ev.live)return"🔴 En curso";if(m<0)return"🔴 En curso";if(m<60)return`⏱ ${Math.round(m)}min`;if(m<1440)return d.toLocaleTimeString("es-ES",{hour:"2-digit",minute:"2-digit"});return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}catch{return"—"}}
 function minsUntil(iso){try{return(new Date(iso)-new Date())/60000}catch{return 9999}}
 function getFiltered(){
   let list=[...S.events];
-  // Remove finished events
-  list=list.filter(e=>!isFinished(e));
   if(S.sportFilter!=="all")list=list.filter(e=>e.group===S.sportFilter);
   if(S.showOnlyArb)list=list.filter(e=>e.isArb);
   list.sort((a,b)=>{let va,vb;if(S.sortKey==="profit"){va=a.isArb?(a.profit||0):-(a.impliedSum);vb=b.isArb?(b.profit||0):-(b.impliedSum)}else{va=minsUntil(a.commence);vb=minsUntil(b.commence)}return S.sortDir==="desc"?vb-va:va-vb});
@@ -456,7 +462,7 @@ function getFiltered(){
 
 // ═══ TIMER ═══
 function startTimer(){if(S._timer)clearInterval(S._timer);S._timer=setInterval(()=>{if(!S.autoRefresh||S.loading)return;S.countdown--;const el=document.getElementById("tickTxt");if(el)el.textContent=tickTxt();if(S.countdown<=0)fetchAll()},1000)}
-function tickTxt(){const active=S.events.filter(e=>!isFinished(e));const a=active.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${active.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
+function tickTxt(){const a=S.events.filter(e=>e.isArb).length,t=S.lastFetch?S.lastFetch.toLocaleTimeString("es-ES"):"—";let s=`${a} arbs · ${S.events.length} ev · ${t}`;if(S.autoRefresh)s+=` · ${S.countdown}s`;return s}
 
 // ═══ RENDER ═══
 function render(){document.getElementById("app").innerHTML=S.ok?mainHTML():setupHTML();bindAll()}
@@ -518,8 +524,7 @@ function renderScanMode(){
 </div>`}
 
 function renderScanner(){
-  const active=S.events.filter(e=>!isFinished(e));
-  const disp=getFiltered(),arbs=active.filter(e=>e.isArb).length,best=active.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0],sc=S.sportCounts;
+  const disp=getFiltered(),arbs=S.events.filter(e=>e.isArb).length,best=S.events.filter(e=>e.isArb).sort((a,b)=>b.profit-a.profit)[0],sc=S.sportCounts;
   const sa=S.sortDir==="desc"?"↓":"↑";
   return`${renderBudget()}${renderScanMode()}
 <div class="stats-row">
@@ -548,7 +553,7 @@ function evCard(ev){
   const open=S.expanded===ev.id,ds=S.detailStakes[ev.id]??S.stake,mx=Math.max(...ev.legs.map(l=>l.odds));
   return`<div class="ev ${ev.isArb?'arb':''}" data-evid="${ev.id}"><div class="ev-bar"></div>
 <div class="ev-head" data-exp="${ev.id}">
-  <div class="ev-left"><div class="ev-meta"><span class="ev-tour">${ev.tournament}</span><span class="ev-sep">·</span><span class="ev-time">${fmtTime(ev.commence,ev.group)}</span><span class="ev-sep">·</span><span style="font-size:8px;color:var(--muted)">${ev.bookCount} casas</span></div><div class="ev-match">${ev.match}</div><span class="ev-sport">${GICON[ev.group]||"🏆"} ${ev.sport}</span></div>
+  <div class="ev-left"><div class="ev-meta"><span class="ev-tour">${ev.tournament}</span><span class="ev-sep">·</span><span class="ev-time">${fmtTime(ev.commence,ev)}</span><span class="ev-sep">·</span><span style="font-size:8px;color:var(--muted)">${ev.bookCount} casas</span></div><div class="ev-match">${ev.match}</div><span class="ev-sport">${GICON[ev.group]||"🏆"} ${ev.sport}</span></div>
   <div class="ev-right">${ev.isArb?`<div class="badge-arb">+${ev.profit.toFixed(2)}%</div>`:`<div class="badge-none">Sin arb</div>`}<div class="ev-impl">Σ ${(ev.impliedSum*100).toFixed(1)}%</div></div>
   <div class="ev-chev ${open?'open':''}">▼</div>
 </div>
