@@ -530,7 +530,7 @@ function renderScanner(){
 <div class="stats-row">
   <div class="stat-cell"><div class="stat-val" style="color:var(--accent)">${arbs}</div><div class="stat-lbl">Arbs</div></div>
   <div class="stat-cell"><div class="stat-val" style="color:var(--amber)">${best?"+"+best.profit.toFixed(1)+"%":"—"}</div><div class="stat-lbl">Mejor</div></div>
-  <div class="stat-cell"><div class="stat-val" style="color:var(--blue)">${active.length}</div><div class="stat-lbl">Eventos</div></div>
+  <div class="stat-cell"><div class="stat-val" style="color:var(--blue)">${S.events.length}</div><div class="stat-lbl">Eventos</div></div>
   <div class="stat-cell"><div class="stat-val" style="color:var(--purple)">${disp.length}</div><div class="stat-lbl">Visibles</div></div>
 </div>
 <div class="status"><div class="status-left"><div class="dot ${S.loading?'loading':S.error?'error':'ok'}"></div><span class="status-text">${S.loading?"Escaneando…":S.error?S.error:S.lastFetch?`Actualizado ${S.lastFetch.toLocaleTimeString("es-ES")}`:"Pulsa Escanear"}</span></div></div>
